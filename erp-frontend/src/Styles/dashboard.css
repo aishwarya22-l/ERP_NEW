@@ -1,0 +1,69 @@
+.admin-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Panels */
+.alert-panel {
+  background: #2b1f1f;
+  color: #ff6b6b;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.activity-panel {
+  background: #1e293b;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* Performance Grid */
+.performance-grid {
+  grid-column: span 2;
+  display: flex;
+  gap: 20px;
+}
+
+.perf-card {
+  flex: 1;
+  background: #111827;
+  color: #38bdf8;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Team Table */
+.team-table {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+}
+
+.team-table table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.team-table td, th {
+  padding: 10px;
+}
+
+.good {
+  color: #22c55e;
+}
+
+.warn {
+  color: #f59e0b;
+}
+
+/* Priority */
+.priority-tasks {
+  background: #0f172a;
+  color: #facc15;
+  padding: 20px;
+  border-radius: 12px;
+}

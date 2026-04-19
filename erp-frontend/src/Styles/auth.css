@@ -1,4 +1,10 @@
 /* MAIN CONTAINER */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 .auth-container {
   display: flex;
   height: 100vh;
@@ -8,7 +14,7 @@
 /* LEFT PANEL */
 .auth-left {
   flex: 1;
-  background: linear-gradient(135deg, #0f2027, #203a43);
+  background: linear-gradient(135deg, #a1c4d3, #039ed2);
   color: rgb(255, 255, 255);
   display: flex;
   flex-direction: column;
@@ -29,7 +35,7 @@
 .auth-right {
   flex: 1;
   position: relative;
-  background: #1657a2;
+  background: #9f81b5;
 }
 
 /* BACKGROUND */
@@ -57,7 +63,7 @@
 .floating-bg span {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.581);
   bottom: -50px;
   animation: floatSmall linear infinite;
 }
@@ -118,7 +124,7 @@
 /* GLASS CARD */
 .glass-card {
   backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(179, 92, 92, 0.08);
   padding: 40px;
   border-radius: 20px;
   width: 320px;

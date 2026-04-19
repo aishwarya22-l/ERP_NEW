@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Manager from "./pages/Manager";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AppLayout from "./layout/AppLayout";
 
 export default function App() {
   return (
@@ -13,13 +14,17 @@ export default function App() {
       <BrowserRouter>
         <Routes>
 
+          {/* Public */}
           <Route path="/" element={<Auth />} />
 
+          {/* Protected with Sidebar */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute roles={["employee","manager","admin"]}>
-                <Dashboard />
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -28,7 +33,9 @@ export default function App() {
             path="/manager"
             element={
               <ProtectedRoute roles={["manager","admin"]}>
-                <Manager />
+                <AppLayout>
+                  <Manager />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -37,7 +44,9 @@ export default function App() {
             path="/admin"
             element={
               <ProtectedRoute roles={["admin"]}>
-                <Admin />
+                <AppLayout>
+                  <Admin />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -46,4 +55,4 @@ export default function App() {
       </BrowserRouter>
     </AuthProvider>
   );
-}
+} 
