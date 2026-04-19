@@ -1,0 +1,157 @@
+/* MAIN CONTAINER */
+.auth-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* LEFT PANEL */
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #0f2027, #203a43);
+  color: rgb(255, 255, 255);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+}
+
+.auth-left h1 {
+  font-size: 40px;
+}
+
+.auth-left p {
+  margin-top: 10px;
+  opacity: 0.7;
+}
+
+/* RIGHT PANEL */
+.auth-right {
+  flex: 1;
+  position: relative;
+  background: #1657a2;
+}
+
+/* BACKGROUND */
+.auth-bg {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* FLOATING ELEMENTS */
+/* Floating container */
+.floating-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* SMALL floating balls */
+.floating-bg span {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  bottom: -50px;
+  animation: floatSmall linear infinite;
+}
+
+/* Different small sizes + positions */
+.floating-bg span:nth-child(1) {
+  left: 80%;
+  width: 12px;
+  height: 12px;
+  animation-duration: 12s;
+}
+
+.floating-bg span:nth-child(2) {
+  left: 60%;
+  width: 8px;
+  height: 8px;
+  animation-duration: 10s;
+}
+
+.floating-bg span:nth-child(3) {
+  left: 40%;
+  width: 10px;
+  height: 10px;
+  animation-duration: 14s;
+}
+
+.floating-bg span:nth-child(4) {
+  left: 20%;
+  width: 6px;
+  height: 6px;
+  animation-duration: 9s;
+}
+
+.floating-bg span:nth-child(5) {
+  left: 70%;
+  width: 9px;
+  height: 9px;
+  animation-duration: 11s;
+}
+
+/* Smooth subtle animation */
+@keyframes floatSmall {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-110vh);
+    opacity: 0;
+  }
+}
+/* GLASS CARD */
+.glass-card {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 40px;
+  border-radius: 20px;
+  width: 320px;
+  z-index: 2;
+}
+
+/* INPUTS */
+.glass-card input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* BUTTON */
+.glass-card button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right, #0072ff, #00c6ff);
+  color: white;
+  cursor: pointer;
+}
+
+/* TOGGLE TEXT */
+.glass-card p {
+  margin-top: 10px;
+  color: #ccc;
+  cursor: pointer;
+}
