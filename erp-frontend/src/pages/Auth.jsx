@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Typewriter } from "./admin/typewriter";
 import "../styles/auth.css";
 
 export default function Auth() {
@@ -38,22 +39,35 @@ export default function Auth() {
   <div className="auth-container">
   {/* LEFT SIDE */}
   <div className="auth-left">
-    <h1>ERP System</h1>
-    <p>Manage your business smarter, faster, better.</p>
+   <h1>
+  <Typewriter text="ERP System" speed={100} />
+</h1>
+<p>
+  <Typewriter
+    text="Manage your business smarter, faster, better."
+    speed={40}
+  />
+</p>
   </div>
 
   {/* RIGHT SIDE */}
   <div className="auth-right">
     <div className="auth-bg">
       <div className="floating-bg">
-        <span className="ball1"></span>
-        <span className="ball2"></span>
-        <span className="ball3"></span>
-        <span className="ball4"></span>
-        <span className="ball5"></span>
-      </div>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
 
-      <form className="glass-card" onSubmit={handleSubmit}>
+      <form className="glass-card"
+  onMouseMove={(e) => {
+    const x = (window.innerWidth / 2 - e.clientX) / 30;
+    const y = (window.innerHeight / 2 - e.clientY) / 30;
+    e.currentTarget.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = `rotateX(8deg) rotateY(-8deg)`;
+  }} onSubmit={handleSubmit}>
         <h2>{isLogin ? "Login" : "Register"}</h2>
 
         {!isLogin && (
