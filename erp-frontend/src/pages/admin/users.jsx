@@ -12,7 +12,8 @@ import {
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editId, setEditId] = useState(null); // ✅ FIXED
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,8 +23,15 @@ export default function Users() {
 
   // 🔥 FETCH USERS
   const loadUsers = async () => {
-    const data = await getUsers();
-    setUsers(data);
+    try {
+      setLoading(true);
+      const data = await getUsers();
+      setUsers(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -34,70 +42,113 @@ export default function Users() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (editIndex !== null) {
-      await updateUser(users[editIndex].id, formData);
-    } else {
-      await createUser(formData);
+    // ✅ VALIDATION
+    if (!formData.name || !formData.email || !formData.role) {
+      alert("All fields required");
+      return;
     }
 
-    setFormData({ name: "", email: "", role: "" });
-    setEditIndex(null);
-    setShowForm(false);
-    loadUsers();
+    try {
+      if (editId) {
+        await updateUser(editId, formData);
+      } else {
+        await createUser(formData);
+      }
+
+      resetForm();
+      loadUsers();
+
+    } catch (err) {
+      console.error("Submit error:", err);
+    }
   };
 
   // 🔥 DELETE
   const handleDelete = async (id) => {
-    await deleteUser(id);
-    loadUsers();
+    if (!window.confirm("Delete this user?")) return;
+
+    try {
+      await deleteUser(id);
+      loadUsers();
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
   };
 
-  const handleEdit = (index) => {
-    setFormData(users[index]);
-    setEditIndex(index);
+  // 🔥 EDIT
+  const handleEdit = (user) => {
+    setFormData({
+      name: user.name,
+      email: user.email,
+      role: user.role
+    });
+    setEditId(user.id); // ✅ FIXED
     setShowForm(true);
+  };
+
+  // 🔥 RESET FORM
+  const resetForm = () => {
+    setFormData({ name: "", email: "", role: "" });
+    setEditId(null);
+    setShowForm(false);
   };
 
   return (
     <div className="users-page">
 
-      <div className="users-header">
-        <button className="add-btn" onClick={() => setShowForm(true)}>
-          <FaPlus /> Add User
-        </button>
-      </div>
+      {/* FLOAT BUTTON */}
+      <button className="floating-add" onClick={() => setShowForm(true)}>
+        <FaPlus />
+      </button>
 
+      {/* TABLE */}
       <div className="table-container glass">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
 
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
-                  <FaEdit onClick={() => handleEdit(index)} />
-                  <FaTrash onClick={() => handleDelete(user.id)} />
-                </td>
+        {loading ? (
+          <p style={{ textAlign: "center" }}>Loading...</p>
+        ) : users.length === 0 ? (
+          <p style={{ textAlign: "center", opacity: 0.6 }}>
+            No users found 🚀
+          </p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{user.role}</td>
+                  <td>
+                    <FaEdit
+                      className="icon edit"
+                      onClick={() => handleEdit(user)} // ✅ FIXED
+                    />
+                    <FaTrash
+                      className="icon delete"
+                      onClick={() => handleDelete(user.id)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
+      {/* MODAL */}
       {showForm && (
         <div className="modal">
           <form className="glass-card" onSubmit={handleSubmit}>
-            <h2>{editIndex !== null ? "Edit User" : "Add User"}</h2>
+            <h2>{editId ? "Edit User" : "Add User"}</h2>
 
             <input
               placeholder="Name"
@@ -115,15 +166,28 @@ export default function Users() {
               }
             />
 
-            <input
-              placeholder="Role"
+            {/* ✅ DROPDOWN (better than text input) */}
+            <select
               value={formData.role}
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value })
               }
-            />
+            >
+              <option value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
+              <option value="employee">Employee</option>
+            </select>
 
-            <button>{editIndex !== null ? "Update" : "Add"}</button>
+            <button>{editId ? "Update" : "Add"}</button>
+
+            <button
+              type="button"
+              className="cancel"
+              onClick={resetForm}
+            >
+              Cancel
+            </button>
           </form>
         </div>
       )}

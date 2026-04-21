@@ -1,32 +1,26 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import { initDatabase } from "./initDb.js";
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./routes/authRoutes.js";
+import employeeRoutes from "./routes/employeeRoutes.js";
 
 const app = express();
-
-app.use(express.json());
 
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }));
 
+app.use(express.json());
+
 app.use(session({
-  secret: "erp_secret",
+  secret: "secret-key",
   resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    maxAge: 86400000
-  }
+  saveUninitialized: false
 }));
 
-app.use("/api/auth", authRoutes);
+// ROUTES
 
-app.listen(5000, async () => {
-  console.log("Backend running");
-  await initDatabase(); // ✅ AUTO DB
-});
+app.use("/api/auth", authRoutes);
+app.use("/api/employees", employeeRoutes);
+app.listen(5000, () => console.log("Server running on port 5000"));
