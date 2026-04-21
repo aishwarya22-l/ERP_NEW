@@ -37,3 +37,34 @@
   background: #3b82f6;
   color: white;
 }
+/* USER INFO SECTION */
+.user-info {
+  background: linear-gradient(135deg, #334155, #1e293b);
+  border: 1px solid #475569;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #cbd5f5;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #a78bfa;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: rgba(167, 139, 250, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}

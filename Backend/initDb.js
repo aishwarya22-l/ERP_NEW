@@ -64,6 +64,22 @@ export const initDatabase = async () => {
       console.error("Employees error ❌", err);
     }
 
+    // ROLES
+    try {
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS roles (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(100) UNIQUE NOT NULL,
+          description VARCHAR(255),
+          permissions JSON,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      console.log("Roles table ✅");
+    } catch (err) {
+      console.error("Roles error ❌", err);
+    }
+
   } catch (err) {
     console.error("DB INIT ERROR ❌", err);
   }

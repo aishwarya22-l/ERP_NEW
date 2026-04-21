@@ -8,19 +8,30 @@ import {
   updateUser,
   deleteUser
 } from "../../api/userApi";
-
+import { getRoles } from "../../api/rolesApi";
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null); // ✅ FIXED
   const [loading, setLoading] = useState(false);
-
+const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     role: ""
   });
+useEffect(() => {
+  const loadRoles = async () => {
+    try {
+      const data = await getRoles();
+      setRoles(data);
+    } catch (err) {
+      console.error("Roles fetch error:", err);
+    }
+  };
 
+  loadRoles();
+}, []);
   // 🔥 FETCH USERS
   const loadUsers = async () => {
     try {
@@ -167,17 +178,20 @@ export default function Users() {
             />
 
             {/* ✅ DROPDOWN (better than text input) */}
-            <select
-              value={formData.role}
-              onChange={(e) =>
-                setFormData({ ...formData, role: e.target.value })
-              }
-            >
-              <option value="">Select Role</option>
-              <option value="admin">Admin</option>
-              <option value="manager">Manager</option>
-              <option value="employee">Employee</option>
-            </select>
+<select
+  value={formData.role}
+  onChange={(e) =>
+    setFormData({ ...formData, role: e.target.value })
+  }
+>
+  <option value="">Select Role</option>
+
+  {roles.map((role) => (
+    <option key={role.id} value={role.name}>
+      {role.name}
+    </option>
+  ))}
+</select>
 
             <button>{editId ? "Update" : "Add"}</button>
 

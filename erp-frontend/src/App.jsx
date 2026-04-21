@@ -8,6 +8,7 @@ import Manager from "./pages/Manager";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AppLayout from "./layout/AppLayout";
 import Users from "./pages/admin/Users";
+import Roles from "./pages/admin/Roles";
 export default function App() {
   return (
     <AuthProvider>
@@ -49,6 +50,18 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/admin/roles"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AppLayout>
+                  <Roles />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/admin"
             element={

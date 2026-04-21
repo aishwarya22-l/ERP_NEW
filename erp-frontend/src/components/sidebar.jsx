@@ -10,6 +10,7 @@ export default function Sidebar() {
     admin: [
       { name: "Dashboard", path: "/admin/dashboard" },
       { name: "Users", path: "/admin/users" },
+      { name: "Roles", path: "/admin/roles" },
       { name: "Projects", path: "/admin/projects" },
       { name: "Reports", path: "/admin/reports" },
     ],
@@ -30,6 +31,13 @@ export default function Sidebar() {
   return (
     <div className="sidebar">
       <h2 className="logo">ERP</h2>
+
+      {user && (
+        <div className="user-info">
+          <div className="user-name">{user.name}</div>
+          <div className="user-role">{user.role?.toUpperCase()}</div>
+        </div>
+      )}
 
       <ul>
         {menuItems.map((item, index) => (
