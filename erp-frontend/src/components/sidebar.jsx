@@ -30,6 +30,14 @@ export default function Sidebar() {
       { name: "My Tasks", path: "/tasks" },
       { name: "Timesheet", path: "/timesheet" },
     ],
+    "assests": [
+  { name: "Dashboard", path: "/assets/dashboard" },
+  { name: "Assets", path: "/assets/assets" },
+  { name: "Categories", path: "/assets/categories" },
+  { name: "Assignments", path: "/assets/assignments" },
+  { name: "Maintenance", path: "/assets/maintenance" },
+  { name: "Users", path: "/assets/users" },
+],
   };
 
   const menuItems = menuByRole[role] || [];

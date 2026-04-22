@@ -21,6 +21,7 @@ export default function Auth() {
 
       if (res.user.role === "admin") navigate("/admin");
       else if (res.user.role === "manager") navigate("/manager");
+      else if (res.user.role === "assests") navigate("/assets");
       else navigate("/dashboard");
 
     } else {
