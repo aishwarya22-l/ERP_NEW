@@ -173,3 +173,42 @@ tr:hover {
 .floating-add:hover {
   transform: scale(1.1);
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.pagination button {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+.pagination button.active {
+  background: linear-gradient(135deg, #6366f1, #22c55e);
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-header {
+  display: flex;
+  justify-content: flex-end; /* 👈 LEFT SIDE */
+  margin-bottom: 10px;
+}
+
+.pagination-controls select {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: white;
+}

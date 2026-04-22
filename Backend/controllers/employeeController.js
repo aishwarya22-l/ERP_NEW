@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import bcrypt from "bcryptjs";
 
 // GET ALL
 export const getEmployees = async (req, res) => {
@@ -14,11 +15,14 @@ export const getEmployees = async (req, res) => {
 // CREATE
 export const createEmployee = async (req, res) => {
   try {
-    const { name, email, role } = req.body;
+    const { name, email, password, role } = req.body;
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await db.query(
-      "INSERT INTO employees (name, email, role) VALUES (?, ?, ?)",
-      [name, email, role]
+      "INSERT INTO employees (name, email, password, role) VALUES (?, ?, ?, ?)",
+      [name, email, hashedPassword, role]
     );
 
     res.json({ message: "Employee added" });
@@ -32,11 +36,11 @@ export const createEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, role } = req.body;
+    const { name, email, password, role } = req.body;
 
     await db.query(
-      "UPDATE employees SET name=?, email=?, role=? WHERE id=?",
-      [name, email, role, id]
+      "UPDATE employees SET name=?, email=?, password=?, role=? WHERE id=?",
+      [name, email, password, role, id]
     );
 
     res.json({ message: "Employee updated" });

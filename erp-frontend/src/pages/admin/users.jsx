@@ -15,9 +15,18 @@ export default function Users() {
   const [editId, setEditId] = useState(null); // ✅ FIXED
   const [loading, setLoading] = useState(false);
 const [roles, setRoles] = useState([]);
+const [currentPage, setCurrentPage] = useState(1);
+const [pageSize, setPageSize] = useState(10);
+const totalPages = Math.ceil(users.length / pageSize);
+
+const startIndex = (currentPage - 1) * pageSize;
+const endIndex = startIndex + pageSize;
+
+const currentUsers = users.slice(startIndex, endIndex);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    password: "",
     role: ""
   });
 useEffect(() => {
@@ -59,6 +68,11 @@ useEffect(() => {
       return;
     }
 
+    if (!editId && !formData.password) {
+      alert("Password required for new users");
+      return;
+    }
+
     try {
       if (editId) {
         await updateUser(editId, formData);
@@ -91,6 +105,7 @@ useEffect(() => {
     setFormData({
       name: user.name,
       email: user.email,
+      password: "",
       role: user.role
     });
     setEditId(user.id); // ✅ FIXED
@@ -99,7 +114,7 @@ useEffect(() => {
 
   // 🔥 RESET FORM
   const resetForm = () => {
-    setFormData({ name: "", email: "", role: "" });
+    setFormData({ name: "", email: "", password: "", role: "" });
     setEditId(null);
     setShowForm(false);
   };
@@ -114,7 +129,21 @@ useEffect(() => {
 
       {/* TABLE */}
       <div className="table-container glass">
-
+<div className="pagination-header">
+  <div className="pagination-controls">
+    <select
+      value={pageSize}
+      onChange={(e) => {
+        setPageSize(Number(e.target.value));
+        setCurrentPage(1);
+      }}
+    >
+      <option value={10}>10</option>
+      <option value={50}>50</option>
+      <option value={100}>100</option>
+    </select>
+  </div>
+</div>
         {loading ? (
           <p style={{ textAlign: "center" }}>Loading...</p>
         ) : users.length === 0 ? (
@@ -133,7 +162,7 @@ useEffect(() => {
             </thead>
 
             <tbody>
-              {users.map((user) => (
+              {currentUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
@@ -152,7 +181,38 @@ useEffect(() => {
               ))}
             </tbody>
           </table>
+          
         )}
+        <div className="pagination">
+
+  {/* PREVIOUS */}
+  <button
+    disabled={currentPage === 1}
+    onClick={() => setCurrentPage(currentPage - 1)}
+  >
+    {"<"}
+  </button>
+
+  {/* PAGE NUMBERS */}
+  {Array.from({ length: totalPages }, (_, i) => (
+    <button
+      key={i}
+      className={currentPage === i + 1 ? "active" : ""}
+      onClick={() => setCurrentPage(i + 1)}
+    >
+      {i + 1}
+    </button>
+  ))}
+
+  {/* NEXT */}
+  <button
+    disabled={currentPage === totalPages}
+    onClick={() => setCurrentPage(currentPage + 1)}
+  >
+    {">"}
+  </button>
+
+</div>
       </div>
 
       {/* MODAL */}
@@ -174,6 +234,15 @@ useEffect(() => {
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
+              }
+            />
+
+            <input
+              placeholder="Password"
+              type="password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
               }
             />
 
