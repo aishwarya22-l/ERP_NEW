@@ -1,10 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/sidebar.css";
-
+import { FiLogOut } from "react-icons/fi";
 export default function Sidebar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const role = user?.role;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   const menuByRole = {
     admin: [
@@ -53,6 +59,11 @@ export default function Sidebar() {
           </li>
         ))}
       </ul>
+
+        <div className="logout-section" onClick={handleLogout}>
+    <FiLogOut className="logout-icon" />
+    <span>Logout</span>
+  </div>
     </div>
   );
 }

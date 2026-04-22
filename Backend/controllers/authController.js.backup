@@ -25,67 +25,50 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const normalizedEmail = email.toLowerCase();
-    let user = null;
-
-    // Check users table
-    const [userRows] = await db.query(
+    // First check users table
+    let [rows] = await db.query(
       "SELECT id, name, email, password, role FROM users WHERE email=?",
-      [normalizedEmail]
+      [email]
     );
 
-    if (userRows.length > 0) {
-      user = userRows[0];
-    } else {
-      // Check employees table
-      const [empRows] = await db.query(
-        "SELECT id, name, email, password, role FROM employees WHERE email=?",
-        [normalizedEmail]
-      );
+    let userType = 'user';
 
-      if (empRows.length > 0) {
-        user = empRows[0];
-      }
+    // If not found in users, check employees table
+    if (!rows.length) {
+      [rows] = await db.query(
+        "SELECT id, name, email, password, role FROM employees WHERE email=?",
+        [email]
+      );
+      userType = 'employee';
     }
 
-    if (!user) {
+    if (!rows.length) {
       return res.status(400).json({ message: "User not found" });
     }
 
+    const user = rows[0];
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Wrong password" });
     }
 
-    // ✅ Only store role (no userType)
     req.session.user = {
       id: user.id,
       name: user.name,
-      email: user.email,
       role: user.role,
+      userType: userType  // Add user type to session
     };
 
-    res.json({
-      message: "Login successful",
-      user: req.session.user,
-    });
+    res.json({ user: req.session.user });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 // CURRENT USER
 export const getCurrentUser = (req, res) => {
   res.json(req.session.user || null);
-};
-
-// LOGOUT
-export const logoutUser = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Could not log out" });
-    }
-    res.json({ message: "Logged out successfully" });
-  });
 };

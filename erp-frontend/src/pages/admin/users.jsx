@@ -17,12 +17,8 @@ export default function Users() {
 const [roles, setRoles] = useState([]);
 const [currentPage, setCurrentPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
-const totalPages = Math.ceil(users.length / pageSize);
-
-const startIndex = (currentPage - 1) * pageSize;
-const endIndex = startIndex + pageSize;
-
-const currentUsers = users.slice(startIndex, endIndex);
+const [totalPages, setTotalPages] = useState(0);
+const [total, setTotal] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -45,8 +41,10 @@ useEffect(() => {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const data = await getUsers();
-      setUsers(data);
+      const data = await getUsers(currentPage, pageSize);
+      setUsers(data.data);
+      setTotal(data.total);
+      setTotalPages(data.totalPages);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -56,7 +54,7 @@ useEffect(() => {
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [currentPage, pageSize]);
 
   // 🔥 SUBMIT
   const handleSubmit = async (e) => {
@@ -142,6 +140,7 @@ useEffect(() => {
       <option value={50}>50</option>
       <option value={100}>100</option>
     </select>
+    <span style={{ marginLeft: "10px" }}>Total: {total}</span>
   </div>
 </div>
         {loading ? (
@@ -162,7 +161,7 @@ useEffect(() => {
             </thead>
 
             <tbody>
-              {currentUsers.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id}>
                   <td>{user.name}</td>
                   <td>{user.email}</td>

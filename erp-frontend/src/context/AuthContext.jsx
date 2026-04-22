@@ -26,8 +26,17 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const logout = async () => {
+    await fetch("http://localhost:5000/api/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+    setUser(null);
+  };
+
+
   return (
-    <AuthContext.Provider value={{ user, login, register }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,7 +1,7 @@
 const BASE_URL = "http://localhost:5000/api/employees";
 
-export const getUsers = async () => {
-  const res = await fetch(BASE_URL);
+export const getUsers = async (page = 1, pageSize = 10) => {
+  const res = await fetch(`${BASE_URL}?page=${page}&pageSize=${pageSize}`);
   return res.json();
 };
 

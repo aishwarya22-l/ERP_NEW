@@ -18,3 +18,17 @@ export const allowRoles = (...roles) => {
     next();
   };
 };
+
+export const allowUserTypes = (...userTypes) => {
+  return (req, res, next) => {
+    const userType = req.session.user.userType;
+
+    if (!userTypes.includes(userType)) {
+      return res.status(403).json({
+        message: `Access denied for user type: ${userType}`
+      });
+    }
+
+    next();
+  };
+};
