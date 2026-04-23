@@ -80,7 +80,27 @@ export const initDatabase = async () => {
     } catch (err) {
       console.error("Roles error ❌", err);
     }
- await conn.query(`
+
+    // DEPARTMENTS
+    try {
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS departments (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(100) UNIQUE NOT NULL,
+          description VARCHAR(255),
+          location VARCHAR(100),
+          manager_id INT,
+          status ENUM('active','inactive') DEFAULT 'active',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (manager_id) REFERENCES employees(id) ON DELETE SET NULL
+        )
+      `);
+      console.log("Departments table ✅");
+    } catch (err) {
+      console.error("Departments error ❌", err);
+    }
+
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) UNIQUE NOT NULL,
@@ -120,7 +140,7 @@ export const initDatabase = async () => {
         return_date DATE,
         status ENUM('assigned','returned') DEFAULT 'assigned',
         FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES employees(id) ON DELETE CASCADE
       )
     `);
     console.log("Asset Assignments table ✅");

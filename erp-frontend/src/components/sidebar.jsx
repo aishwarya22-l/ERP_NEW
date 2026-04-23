@@ -17,6 +17,7 @@ export default function Sidebar() {
       { name: "Dashboard", path: "/admin/dashboard" },
       { name: "Users", path: "/admin/users" },
       { name: "Roles", path: "/admin/roles" },
+      { name: "Departments", path: "/admin/departments" },
       { name: "Projects", path: "/admin/projects" },
       { name: "Reports", path: "/admin/reports" },
     ],
@@ -34,8 +35,8 @@ export default function Sidebar() {
   { name: "Dashboard", path: "/assets/dashboard" },
   { name: "Assets", path: "/assets/assets" },
   { name: "Categories", path: "/assets/categories" },
-  { name: "Assignments", path: "/assets/assignments" },
-  { name: "Maintenance", path: "/assets/maintenance" },
+  // { name: "Assignments", path: "/assets/assignments" },
+  // { name: "Maintenance", path: "/assets/maintenance" },
   { name: "Users", path: "/assets/users" },
 ],
   };
