@@ -9,12 +9,14 @@ import {
   deleteUser
 } from "../../api/userApi";
 import { getRoles } from "../../api/rolesApi";
+import { getDepartments } from "../../api/departmentApi";
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null); // ✅ FIXED
   const [loading, setLoading] = useState(false);
 const [roles, setRoles] = useState([]);
+const [departments, setDepartments] = useState([]);
 const [currentPage, setCurrentPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
 const [totalPages, setTotalPages] = useState(0);
@@ -23,7 +25,8 @@ const [total, setTotal] = useState(0);
     name: "",
     email: "",
     password: "",
-    role: ""
+    role: "",
+    department: ""
   });
 useEffect(() => {
   const loadRoles = async () => {
@@ -35,7 +38,17 @@ useEffect(() => {
     }
   };
 
+  const loadDepartments = async () => {
+    try {
+      const data = await getDepartments();
+      setDepartments(data);
+    } catch (err) {
+      console.error("Departments fetch error:", err);
+    }
+  };
+
   loadRoles();
+  loadDepartments();
 }, []);
   // 🔥 FETCH USERS
   const loadUsers = async () => {
@@ -104,7 +117,8 @@ useEffect(() => {
       name: user.name,
       email: user.email,
       password: "",
-      role: user.role
+      role: user.role,
+      department: user.department || ""
     });
     setEditId(user.id); // ✅ FIXED
     setShowForm(true);
@@ -112,7 +126,7 @@ useEffect(() => {
 
   // 🔥 RESET FORM
   const resetForm = () => {
-    setFormData({ name: "", email: "", password: "", role: "" });
+    setFormData({ name: "", email: "", password: "", role: "", department: "" });
     setEditId(null);
     setShowForm(false);
   };
@@ -156,6 +170,7 @@ useEffect(() => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Department</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -166,6 +181,7 @@ useEffect(() => {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
+                  <td>{user.department || "N/A"}</td>
                   <td>
                     <FaEdit
                       className="icon edit"
@@ -260,6 +276,20 @@ useEffect(() => {
     </option>
   ))}
 </select>
+
+            <select
+              value={formData.department}
+              onChange={(e) =>
+                setFormData({ ...formData, department: e.target.value })
+              }
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.name}>
+                  {dept.name}
+                </option>
+              ))}
+            </select>
 
             <button>{editId ? "Update" : "Add"}</button>
 

@@ -1,9 +1,10 @@
 import db from "../config/db.js";
 
+// GET ALL ASSIGNMENTS
 export const getAssignments = async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT aa.id, aa.asset_id, aa.user_id, aa.assigned_date, aa.return_date, aa.status,
+      `SELECT aa.id, aa.asset_id, aa.user_id, aa.department, aa.assigned_date, aa.return_date, aa.status,
               a.name AS asset_name, a.asset_tag,
               e.name AS assigned_to
        FROM asset_assignments aa
@@ -18,12 +19,29 @@ export const getAssignments = async (req, res) => {
   }
 };
 
+// GET USERS BY DEPARTMENT
+export const getUsersByDepartment = async (req, res) => {
+  try {
+    const { department } = req.params;
+    
+    const [rows] = await db.query(
+      "SELECT id, name, email, department FROM employees WHERE department = ?",
+      [department]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
+// CREATE ASSIGNMENT
 export const createAssignment = async (req, res) => {
   try {
-    const { asset_id, user_id, assigned_date = null, return_date = null } = req.body;
+    const { asset_id, user_id, department, assigned_date = null, return_date = null } = req.body;
 
-    if (!asset_id || !user_id) {
-      return res.status(400).json({ message: "Asset and assignee are required" });
+    if (!asset_id || !user_id || !department) {
+      return res.status(400).json({ message: "Asset, user, and department are required" });
     }
 
     const [[asset]] = await db.query("SELECT id, status FROM assets WHERE id = ?", [asset_id]);
@@ -35,10 +53,15 @@ export const createAssignment = async (req, res) => {
       return res.status(400).json({ message: "Only available assets can be assigned" });
     }
 
+    const [[user]] = await db.query("SELECT id, name FROM employees WHERE id = ?", [user_id]);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     await db.query(
-      `INSERT INTO asset_assignments (asset_id, user_id, assigned_date, return_date)
-       VALUES (?, ?, ?, ?)`,
-      [asset_id, user_id, assigned_date || new Date().toISOString().slice(0, 10), return_date]
+      `INSERT INTO asset_assignments (asset_id, user_id, department, user, assigned_date, return_date, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'assigned')`,
+      [asset_id, user_id, department, user.name, assigned_date || new Date().toISOString().slice(0, 10), return_date]
     );
 
     await db.query("UPDATE assets SET status = 'assigned' WHERE id = ?", [asset_id]);
@@ -47,5 +70,62 @@ export const createAssignment = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error creating assignment" });
+  }
+};
+
+// UPDATE ASSIGNMENT
+export const updateAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { asset_id, user_id, department, assigned_date, return_date, status } = req.body;
+
+    const [[assignment]] = await db.query("SELECT asset_id FROM asset_assignments WHERE id = ?", [id]);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    if (user_id) {
+      const [[user]] = await db.query("SELECT name FROM employees WHERE id = ?", [user_id]);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await db.query(
+        `UPDATE asset_assignments SET asset_id=?, user_id=?, department=?, user=?, assigned_date=?, return_date=?, status=? WHERE id=?`,
+        [asset_id, user_id, department, user.name, assigned_date, return_date, status, id]
+      );
+    } else {
+      await db.query(
+        `UPDATE asset_assignments SET assigned_date=?, return_date=?, status=? WHERE id=?`,
+        [assigned_date, return_date, status, id]
+      );
+    }
+
+    res.json({ message: "Assignment updated" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating assignment" });
+  }
+};
+
+// DELETE ASSIGNMENT
+export const deleteAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [[assignment]] = await db.query("SELECT asset_id FROM asset_assignments WHERE id = ?", [id]);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    await db.query("DELETE FROM asset_assignments WHERE id = ?", [id]);
+
+    // Update asset status back to available
+    await db.query("UPDATE assets SET status = 'available' WHERE id = ?", [assignment.asset_id]);
+
+    res.json({ message: "Assignment deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting assignment" });
   }
 };

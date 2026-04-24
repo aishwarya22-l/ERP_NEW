@@ -13,7 +13,7 @@ export const getEmployees = async (req, res) => {
 
     // Get paginated data
     const [rows] = await db.query(
-      "SELECT id, name, email, role, created_at FROM employees LIMIT ? OFFSET ?",
+      "SELECT id, name, email, role, department, created_at FROM employees LIMIT ? OFFSET ?",
       [pageSize, offset]
     );
 
@@ -33,14 +33,14 @@ export const getEmployees = async (req, res) => {
 // CREATE
 export const createEmployee = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, department } = req.body;
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await db.query(
-      "INSERT INTO employees (name, email, password, role) VALUES (?, ?, ?, ?)",
-      [name, email, hashedPassword, role]
+      "INSERT INTO employees (name, email, password, role, department) VALUES (?, ?, ?, ?, ?)",
+      [name, email, hashedPassword, role, department || null]
     );
 
     res.json({ message: "Employee added" });
@@ -54,20 +54,20 @@ export const createEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, department } = req.body;
 
     // If password is provided and not empty, hash it
     if (password && password.trim()) {
       const hashedPassword = await bcrypt.hash(password, 10);
       await db.query(
-        "UPDATE employees SET name=?, email=?, password=?, role=? WHERE id=?",
-        [name, email, hashedPassword, role, id]
+        "UPDATE employees SET name=?, email=?, password=?, role=?, department=? WHERE id=?",
+        [name, email, hashedPassword, role, department || null, id]
       );
     } else {
       // Don't update password if not provided
       await db.query(
-        "UPDATE employees SET name=?, email=?, role=? WHERE id=?",
-        [name, email, role, id]
+        "UPDATE employees SET name=?, email=?, role=?, department=? WHERE id=?",
+        [name, email, role, department || null, id]
       );
     }
 

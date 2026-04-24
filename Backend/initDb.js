@@ -56,6 +56,7 @@ export const initDatabase = async () => {
           email VARCHAR(100),
           password VARCHAR(255),
           role VARCHAR(50),
+          department VARCHAR(100),
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id)
         )
@@ -135,6 +136,8 @@ export const initDatabase = async () => {
       CREATE TABLE IF NOT EXISTS asset_assignments (
         id INT AUTO_INCREMENT PRIMARY KEY,
         asset_id INT,
+        department VARCHAR(100),
+        user VARCHAR(100),
         user_id INT,
         assigned_date DATE,
         return_date DATE,
