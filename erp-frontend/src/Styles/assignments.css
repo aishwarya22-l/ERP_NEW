@@ -1,5 +1,5 @@
 :root {
-  --bg: radial-gradient(circle at top, #b5a0d0, #0f001f);
+  --bg: radial-gradient(circle at top, #b5a0d0, #f7f5f9);
   --glass: rgba(255, 255, 255, 0.08);
   --border: rgba(255, 255, 255, 0.18);
   --accent: #a855f7;

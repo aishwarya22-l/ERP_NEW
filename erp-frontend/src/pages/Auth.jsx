@@ -3,7 +3,9 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Typewriter } from "./admin/typewriter";
 import "../styles/auth.css";
-
+import ERPScene from "./ERPScene";
+import { useEffect } from "react";
+import gsap from "gsap";
 export default function Auth() {
   const { login, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
@@ -39,17 +41,54 @@ export default function Auth() {
   return (
   <div className="auth-container">
   {/* LEFT SIDE */}
-  <div className="auth-left">
-   <h1>
-  <Typewriter text="ERP System" speed={100} />
-</h1>
-<p>
-  <Typewriter
-    text="Manage your business smarter, faster, better."
-    speed={40}
-  />
-</p>
+<div
+  className="auth-left"
+  onMouseMove={(e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 10;
+    const y = (e.clientY / window.innerHeight - 0.5) * 10;
+
+    const el = document.querySelector(".overlay-text");
+    if (el) {
+      el.style.transform = `translate(${x}px, ${y}px)`;
+    }
+  }}
+>
+  <ERPScene />
+
+  <div className="overlay-text">
+    <h1>
+      <Typewriter text="ERP System" speed={100} />
+    </h1>
+
+    <p className="subtitle">
+      Manage your business smarter, faster, better.
+    </p>
+
+    <div className="features">
+      <div className="feature-card delay-1">
+        <h3>📦 Asset & IT Inventory</h3>
+        <p>
+          Track devices, assign assets to employees, monitor usage and lifecycle
+          with real-time visibility.
+        </p>
+      </div>
+
+      <div className="feature-card delay-2">
+        <h3>💰 Payroll Management</h3>
+        <p>
+          Automate salary processing, deductions, payslips, and compliance with accuracy.
+        </p>
+      </div>
+
+      <div className="feature-card delay-3">
+        <h3>🔐 Role-Based Access</h3>
+        <p>
+          Secure access control for admin, manager, and employees with structured permissions.
+        </p>
+      </div>
+    </div>
   </div>
+</div>
 
   {/* RIGHT SIDE */}
   <div className="auth-right">
