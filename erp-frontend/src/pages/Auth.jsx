@@ -10,7 +10,33 @@ export default function Auth() {
   const { login, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
+ useEffect(() => {
+  // Title animation
+  gsap.from(".overlay-text h1", {
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out",
+  });
 
+  // Subtitle
+  gsap.from(".subtitle", {
+    y: 30,
+    opacity: 0,
+    duration: 1,
+    delay: 0.3,
+  });
+
+  // Feature cards stagger
+  gsap.from(".feature-card", {
+    y: 40,
+    opacity: 0,
+    duration: 0.8,
+    stagger: 0.2,
+    delay: 0.6,
+    ease: "power2.out",
+  });
+}, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -44,13 +70,15 @@ export default function Auth() {
 <div
   className="auth-left"
   onMouseMove={(e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 10;
-    const y = (e.clientY / window.innerHeight - 0.5) * 10;
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
 
-    const el = document.querySelector(".overlay-text");
-    if (el) {
-      el.style.transform = `translate(${x}px, ${y}px)`;
-    }
+    gsap.to(".overlay-text", {
+      x,
+      y,
+      duration: 0.5,
+      ease: "power2.out",
+    });
   }}
 >
   <ERPScene />

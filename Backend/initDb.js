@@ -154,6 +154,7 @@ export const initDatabase = async () => {
         id INT AUTO_INCREMENT PRIMARY KEY,
         asset_id INT,
         issue TEXT,
+        priority ENUM('low','medium','high','urgent') DEFAULT 'medium',
         status ENUM('open','in_progress','resolved') DEFAULT 'open',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
