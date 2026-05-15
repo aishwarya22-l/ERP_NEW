@@ -1,0 +1,31 @@
+```
+└── 📁Backend
+    └── 📁config
+        ├── db.js
+    └── 📁controllers
+        ├── assetController.js
+        ├── assignmentController.js
+        ├── authController.js
+        ├── authController.js.backup
+        ├── categoryController.js
+        ├── departmentController.js
+        ├── employeeController.js
+        ├── maintenanceController.js
+        ├── rolesController.js
+    └── 📁middleware
+        ├── auth.js
+    └── 📁routes
+        ├── assetRoutes.js
+        ├── assignmentRoutes.js
+        ├── auth.js
+        ├── authRoutes.js
+        ├── categoryRoutes.js
+        ├── departmentRoutes.js
+        ├── employeeRoutes.js
+        ├── maintenanceRoutes.js
+        ├── rolesRoutes.js
+    ├── initDb.js
+    ├── package-lock.json
+    ├── package.json
+    └── server.js
+```

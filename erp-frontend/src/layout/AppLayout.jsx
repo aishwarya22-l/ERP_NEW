@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
+import NotificationCenter from "../components/NotificationCenter";
+import GlobalSearch from "../components/GlobalSearch";
 import { FiMenu, FiX } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
 
 export default function AppLayout({ children }) {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
 
@@ -38,9 +42,9 @@ export default function AppLayout({ children }) {
 
       {/* ── Main area ── */}
       <div className="main-wrapper">
-        {/* Mobile top bar */}
-        {isMobile && (
-          <header className="mobile-topbar">
+        {/* Top bar — mobile & desktop */}
+        <header className={`app-topbar${isMobile ? " mobile" : ""}`}>
+          {isMobile && (
             <button
               className="hamburger-btn"
               onClick={() => setSidebarOpen(o => !o)}
@@ -48,9 +52,17 @@ export default function AppLayout({ children }) {
             >
               {sidebarOpen ? <FiX size={22} /> : <FiMenu size={22} />}
             </button>
-            <span className="mobile-brand gradient-text">ERP Suite</span>
-          </header>
-        )}
+          )}
+          {isMobile && <span className="mobile-brand gradient-text">ERP Suite</span>}
+          {!isMobile && user && (
+            <div style={{ flex: 1, maxWidth: 440, margin: "0 16px" }}>
+              <GlobalSearch />
+            </div>
+          )}
+          <div style={{ marginLeft: isMobile ? "auto" : 0 }}>
+            <NotificationCenter />
+          </div>
+        </header>
 
         {/* Page content */}
         <main className="page-content">
@@ -122,8 +134,8 @@ export default function AppLayout({ children }) {
           overflow: hidden;
         }
 
-        /* ── Mobile topbar ── */
-        .mobile-topbar {
+        /* ── Top bar (mobile + desktop) ── */
+        .app-topbar {
           height: 54px;
           display: flex;
           align-items: center;

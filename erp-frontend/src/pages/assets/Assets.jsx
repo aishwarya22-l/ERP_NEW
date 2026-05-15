@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { getAssets, createAsset, updateAsset, deleteAsset as deleteAssetApi, getCategories } from "../../api/assetApi.js";
 import "../../styles/assets.css";
 
+const PAGE_SIZE = 20;
+
 export default function Assets() {
-  const [assets, setAssets] = useState([]);
+  const [assets, setAssets]     = useState([]);
+  const [total, setTotal]       = useState(0);
+  const [page, setPage]         = useState(1);
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -19,14 +23,14 @@ export default function Assets() {
   });
 
   // ================= FETCH DATA =================
-  const fetchData = async () => {
+  const fetchData = async (p = page) => {
     try {
-      const [assetsData, categoriesData] = await Promise.all([
-        getAssets(),
+      const [assetsRes, categoriesData] = await Promise.all([
+        getAssets(p, PAGE_SIZE),
         getCategories()
       ]);
-
-      setAssets(assetsData);
+      setAssets(assetsRes.data ?? assetsRes);
+      setTotal(assetsRes.total ?? 0);
       setCategories(categoriesData);
     } catch (err) {
       console.error("Failed to fetch data:", err);
@@ -34,9 +38,7 @@ export default function Assets() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(page); }, [page]);
 
   // ================= ADD / UPDATE =================
   const handleSubmit = async () => {
@@ -48,7 +50,7 @@ export default function Assets() {
       }
 
       resetForm();
-      fetchData();
+      fetchData(page);
     } catch (err) {
       console.error("Failed to save asset:", err);
       alert("Failed to save asset: " + err.message);
@@ -61,7 +63,7 @@ export default function Assets() {
 
     try {
       await deleteAssetApi(id);
-      fetchData();
+      fetchData(page);
     } catch (err) {
       console.error("Failed to delete asset:", err);
       alert("Failed to delete asset: " + err.message);
@@ -253,6 +255,23 @@ export default function Assets() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {total > PAGE_SIZE && (
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, alignItems: "center" }}>
+          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #e5e7eb", background: page === 1 ? "#f9fafb" : "#fff", cursor: page === 1 ? "default" : "pointer" }}>
+            ‹ Prev
+          </button>
+          <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>
+            Page {page} of {Math.ceil(total / PAGE_SIZE)} &nbsp;·&nbsp; {total} total
+          </span>
+          <button disabled={page >= Math.ceil(total / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #e5e7eb", background: page >= Math.ceil(total / PAGE_SIZE) ? "#f9fafb" : "#fff", cursor: page >= Math.ceil(total / PAGE_SIZE) ? "default" : "pointer" }}>
+            Next ›
+          </button>
+        </div>
+      )}
     </div>
   );
 }

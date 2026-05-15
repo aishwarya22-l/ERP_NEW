@@ -1,8 +1,15 @@
 import db from "../config/db.js";
+import { logEvent } from "../services/auditService.js";
+import { send as notify } from "../services/notificationService.js";
 
 // GET ALL ASSIGNMENTS
 export const getAssignments = async (req, res) => {
   try {
+    const page     = Math.max(1, parseInt(req.query.page)  || 1);
+    const pageSize = Math.min(100, parseInt(req.query.pageSize) || 20);
+    const offset   = (page - 1) * pageSize;
+
+    const [[{ total }]] = await db.query("SELECT COUNT(*) AS total FROM asset_assignments");
     const [rows] = await db.query(
       `SELECT aa.id, aa.asset_id, aa.user_id, aa.department, aa.assigned_date, aa.return_date, aa.status,
               a.name AS asset_name, a.asset_tag,
@@ -10,9 +17,11 @@ export const getAssignments = async (req, res) => {
        FROM asset_assignments aa
        LEFT JOIN assets a ON aa.asset_id = a.id
        LEFT JOIN employees e ON aa.user_id = e.id
-       ORDER BY aa.assigned_date DESC`
+       ORDER BY aa.assigned_date DESC
+       LIMIT ? OFFSET ?`,
+      [pageSize, offset]
     );
-    res.json(rows);
+    res.json({ data: rows, total, page, pageSize });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching assignments" });
@@ -23,7 +32,6 @@ export const getAssignments = async (req, res) => {
 export const getUsersByDepartment = async (req, res) => {
   try {
     const { department } = req.params;
-    
     const [rows] = await db.query(
       "SELECT id, name, email, department FROM employees WHERE department = ?",
       [department]
@@ -58,13 +66,28 @@ export const createAssignment = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    await db.query(
+    const dateAssigned = assigned_date || new Date().toISOString().slice(0, 10);
+
+    const [result] = await db.query(
       `INSERT INTO asset_assignments (asset_id, user_id, department, user, assigned_date, return_date, status)
        VALUES (?, ?, ?, ?, ?, ?, 'assigned')`,
-      [asset_id, user_id, department, user.name, assigned_date || new Date().toISOString().slice(0, 10), return_date]
+      [asset_id, user_id, department, user.name, dateAssigned, return_date]
     );
 
     await db.query("UPDATE assets SET status = 'assigned' WHERE id = ?", [asset_id]);
+
+    logEvent(req.session.user, "assignment", result.insertId, "create", null,
+      { asset_id, user_id, department, assigned_date: dateAssigned, return_date });
+
+    // Notify the assigned employee
+    notify(
+      user_id,
+      "asset_assigned",
+      "Asset Assigned to You",
+      `Asset has been assigned to you in the ${department} department.`,
+      "assignment",
+      result.insertId
+    );
 
     res.json({ message: "Assignment created" });
   } catch (err) {
@@ -79,8 +102,11 @@ export const updateAssignment = async (req, res) => {
     const { id } = req.params;
     const { asset_id, user_id, department, assigned_date, return_date, status } = req.body;
 
-    const [[assignment]] = await db.query("SELECT asset_id FROM asset_assignments WHERE id = ?", [id]);
-    if (!assignment) {
+    const [[before]] = await db.query(
+      "SELECT id, asset_id, user_id, department, assigned_date, return_date, status FROM asset_assignments WHERE id = ?",
+      [id]
+    );
+    if (!before) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
@@ -101,10 +127,50 @@ export const updateAssignment = async (req, res) => {
       );
     }
 
+    logEvent(req.session.user, "assignment", id, "update", before,
+      { asset_id, user_id, department, assigned_date, return_date, status });
+
     res.json({ message: "Assignment updated" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error updating assignment" });
+  }
+};
+
+// RETURN ASSIGNMENT
+export const returnAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { notes } = req.body;
+
+    const [[assignment]] = await db.query(
+      "SELECT id, asset_id, user_id, department, assigned_date, status FROM asset_assignments WHERE id = ?",
+      [id]
+    );
+    if (!assignment) return res.status(404).json({ message: "Assignment not found" });
+    if (assignment.status === "returned") {
+      return res.status(400).json({ message: "Assignment already returned" });
+    }
+
+    const returnedById = req.session.user?.id ?? null;
+    const now = new Date().toISOString().slice(0, 10);
+
+    await db.query(
+      `UPDATE asset_assignments
+       SET status = 'returned', returned_at = NOW(), returned_by = ?, return_date = ?, notes = COALESCE(?, notes)
+       WHERE id = ?`,
+      [returnedById, now, notes ?? null, id]
+    );
+
+    await db.query("UPDATE assets SET status = 'available' WHERE id = ?", [assignment.asset_id]);
+
+    logEvent(req.session.user, "assignment", id, "update", assignment,
+      { status: "returned", returned_at: now, returned_by: returnedById });
+
+    res.json({ message: "Asset returned successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error returning assignment" });
   }
 };
 
@@ -113,15 +179,18 @@ export const deleteAssignment = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [[assignment]] = await db.query("SELECT asset_id FROM asset_assignments WHERE id = ?", [id]);
-    if (!assignment) {
+    const [[before]] = await db.query(
+      "SELECT id, asset_id, user_id, department, assigned_date, status FROM asset_assignments WHERE id = ?",
+      [id]
+    );
+    if (!before) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
     await db.query("DELETE FROM asset_assignments WHERE id = ?", [id]);
+    await db.query("UPDATE assets SET status = 'available' WHERE id = ?", [before.asset_id]);
 
-    // Update asset status back to available
-    await db.query("UPDATE assets SET status = 'available' WHERE id = ?", [assignment.asset_id]);
+    logEvent(req.session.user, "assignment", id, "delete", before, null);
 
     res.json({ message: "Assignment deleted" });
   } catch (err) {

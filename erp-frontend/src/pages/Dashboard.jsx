@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   FiPackage, FiUsers, FiAlertCircle, FiTool,
@@ -6,6 +6,8 @@ import {
   FiArrowUpRight, FiArrowDownRight, FiMoreHorizontal,
   FiRefreshCw, FiBell, FiCalendar
 } from "react-icons/fi";
+import ActivityFeed from "../components/ActivityFeed.jsx";
+import { getDashboardStats } from "../api/analyticsApi.js";
 import "../styles/dashboard.css";
 
 /* ── Animated ring hook (drives SVG stroke-dasharray) ────── */
@@ -157,7 +159,7 @@ function MiniBar({ height, label, active }) {
    ══════════════════════════════════════════════════════════ */
 export default function Dashboard() {
   const { user } = useAuth();
-  const [data, setData] = useState(null);
+  const [raw, setRaw] = useState(null);
   const [loading, setLoading] = useState(true);
   const [time, setTime] = useState(new Date());
 
@@ -167,20 +169,29 @@ export default function Dashboard() {
     return () => clearInterval(t);
   }, []);
 
-  /* Fetch stats — falls back gracefully if backend is down */
-  useEffect(() => {
-    fetch("http://localhost:5000/api/dashboard-stats", { credentials: "include" })
-      .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); })
-      .catch(() => {
-        setData({
-          totalAssets: 248, activeUsers: 54, pendingTasks: 17,
-          maintenance: 8, completed: 189, totalTasks: 220,
-          hours: 1340, pending: 17, overdue: 4
-        });
-        setLoading(false);
-      });
+  const load = useCallback(() => {
+    setLoading(true);
+    getDashboardStats()
+      .then(d => setRaw(d))
+      .catch(() => setRaw(null))
+      .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  /* Normalise API shape → what the template expects */
+  const data = raw ? {
+    totalAssets:  Number(raw.assets?.total   || 0),
+    activeUsers:  Number(raw.employees?.total || 0),
+    pending:      Number(raw.tickets?.open    || 0),
+    maintenance:  Number(raw.maintenance?.pending || 0),
+    completed:    Number(raw.tickets?.resolved  || 0),
+    totalTasks:   Number(raw.tickets?.total     || 1),
+    overdue:      Number(raw.tickets?.escalated || 0),
+  } : {
+    totalAssets: 0, activeUsers: 0, pending: 0,
+    maintenance: 0, completed: 0, totalTasks: 1, overdue: 0,
+  };
 
   const greeting = () => {
     const h = time.getHours();
@@ -229,7 +240,7 @@ export default function Dashboard() {
             <FiCalendar size={14} />
             <span>{formatDate(time)}</span>
           </div>
-          <button className="dash-refresh-btn" onClick={() => setLoading(true)}>
+          <button className="dash-refresh-btn" onClick={load}>
             <FiRefreshCw size={15} />
           </button>
           <button className="dash-notify-btn">
@@ -244,36 +255,28 @@ export default function Dashboard() {
         <StatCard
           icon={<FiPackage size={20} />}
           label="Total Assets"
-          value={data.totalAssets || 248}
-          trend={12}
-          trendLabel="vs last month"
+          value={data.totalAssets}
           gradient="linear-gradient(135deg, #7c3aed, #a855f7)"
           delay={0.05}
         />
         <StatCard
           icon={<FiUsers size={20} />}
-          label="Active Users"
-          value={data.activeUsers || 54}
-          trend={5}
-          trendLabel="this week"
+          label="Employees"
+          value={data.activeUsers}
           gradient="linear-gradient(135deg, #0284c7, #38bdf8)"
           delay={0.10}
         />
         <StatCard
           icon={<FiAlertCircle size={20} />}
-          label="Pending Tasks"
-          value={data.pending || 17}
-          trend={-8}
-          trendLabel="vs yesterday"
+          label="Open Tickets"
+          value={data.pending}
           gradient="linear-gradient(135deg, #d97706, #f59e0b)"
           delay={0.15}
         />
         <StatCard
           icon={<FiTool size={20} />}
-          label="Maintenance"
-          value={data.maintenance || 8}
-          trend={-3}
-          trendLabel="this month"
+          label="Maintenance Pending"
+          value={data.maintenance}
           gradient="linear-gradient(135deg, #dc2626, #ef4444)"
           delay={0.20}
         />
@@ -315,31 +318,31 @@ export default function Dashboard() {
                 <FiCheckCircle size={16} style={{ color: "var(--success)" }} />
                 <div>
                   <p className="ring-stat-val">{data.completed}</p>
-                  <p className="ring-stat-label">Completed</p>
+                  <p className="ring-stat-label">Resolved</p>
                 </div>
               </div>
               <div className="ring-stat">
                 <FiClock size={16} style={{ color: "var(--warning)" }} />
                 <div>
-                  <p className="ring-stat-val">{data.totalTasks - data.completed}</p>
-                  <p className="ring-stat-label">Remaining</p>
+                  <p className="ring-stat-val">{Math.max(0, data.totalTasks - data.completed)}</p>
+                  <p className="ring-stat-label">Open</p>
                 </div>
               </div>
               <div className="ring-stat">
                 <FiAlertCircle size={16} style={{ color: "var(--danger)" }} />
                 <div>
-                  <p className="ring-stat-val">{data.overdue || 4}</p>
-                  <p className="ring-stat-label">Overdue</p>
+                  <p className="ring-stat-val">{data.overdue}</p>
+                  <p className="ring-stat-label">Escalated</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="progress-list">
-            <ProgressRow label="Assets Active"    value={210} max={248} color="#8b5cf6" icon={<FiPackage size={13} />} />
-            <ProgressRow label="Users Online"     value={39}  max={54}  color="#38bdf8" icon={<FiUsers size={13} />} />
-            <ProgressRow label="Tasks Resolved"   value={data.completed} max={data.totalTasks} color="#10b981" icon={<FiCheckCircle size={13} />} />
-            <ProgressRow label="SLA Compliance"   value={92}  max={100} color="#f59e0b" icon={<FiActivity size={13} />} />
+            <ProgressRow label="Assets Total"   value={data.totalAssets || 1} max={Math.max(data.totalAssets, 1)} color="#8b5cf6" icon={<FiPackage size={13} />} />
+            <ProgressRow label="Employees"      value={data.activeUsers || 0} max={Math.max(data.activeUsers, 1)}   color="#38bdf8" icon={<FiUsers size={13} />} />
+            <ProgressRow label="Tickets Resolved" value={data.completed}  max={Math.max(data.totalTasks, 1)} color="#10b981" icon={<FiCheckCircle size={13} />} />
+            <ProgressRow label="Pending Maint."  value={data.maintenance || 0} max={Math.max(data.maintenance + data.completed, 1)} color="#f59e0b" icon={<FiActivity size={13} />} />
           </div>
         </div>
 
@@ -356,14 +359,8 @@ export default function Dashboard() {
             </span>
           </div>
 
-          <div className="activity-list">
-            <ActivityItem icon={<FiCheckCircle />} text="Sarah completed Task #42 — Database Migration" time="2 min ago" status="success" delay={0.05} />
-            <ActivityItem icon={<FiPackage />} text="Asset #LP-204 assigned to John (Engineering)" time="11 min ago" status="info" delay={0.10} />
-            <ActivityItem icon={<FiAlertCircle />} text="Maintenance request opened for Server Rack B" time="28 min ago" status="warning" delay={0.15} />
-            <ActivityItem icon={<FiUsers />} text="New user registered: Alex Martinez (Manager)" time="1 hr ago" status="info" delay={0.20} />
-            <ActivityItem icon={<FiTool />} text="Routine maintenance completed on Printer #08" time="2 hr ago" status="success" delay={0.25} />
-            <ActivityItem icon={<FiAlertCircle />} text="Task deadline overdue: Client Delivery Plan" time="3 hr ago" status="danger" delay={0.30} />
-            <ActivityItem icon={<FiCheckCircle />} text="Department 'DevOps' created by Admin" time="5 hr ago" status="success" delay={0.35} />
+          <div className="activity-list" style={{ maxHeight: 360, overflowY: "auto" }}>
+            <ActivityFeed limit={12} />
           </div>
         </div>
 

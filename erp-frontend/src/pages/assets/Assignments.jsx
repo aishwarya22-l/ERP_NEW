@@ -10,10 +10,14 @@ import {
   deleteAssignment
 } from "../../api/assignmentApi";
 import { getDepartments } from "../../api/departmentApi";
-import { getAssets } from "../../api/assetApi";
+import { getAvailableAssets } from "../../api/assetApi";
+
+const PAGE_SIZE = 20;
 
 export default function Assignments() {
   const [assignments, setAssignments] = useState([]);
+  const [total, setTotal]             = useState(0);
+  const [page, setPage]               = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -32,17 +36,20 @@ export default function Assignments() {
 
   // 🔥 LOAD INITIAL DATA
   useEffect(() => {
-    loadAssignments();
+    loadAssignments(page);
     loadDepartments();
     loadAssets();
   }, []);
 
+  useEffect(() => { loadAssignments(page); }, [page]);
+
   // 🔥 LOAD ASSIGNMENTS
-  const loadAssignments = async () => {
+  const loadAssignments = async (p = 1) => {
     try {
       setLoading(true);
-      const data = await getAssignments();
-      setAssignments(data);
+      const res = await getAssignments(p, PAGE_SIZE);
+      setAssignments(res.data ?? res);
+      setTotal(res.total ?? 0);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -60,11 +67,11 @@ export default function Assignments() {
     }
   };
 
-  // 🔥 LOAD ASSETS
+  // 🔥 LOAD ASSETS (available only — for dropdown)
   const loadAssets = async () => {
     try {
-      const data = await getAssets();
-      setAssets(data);
+      const data = await getAvailableAssets();
+      setAssets(Array.isArray(data) ? data : data.data ?? []);
     } catch (err) {
       console.error("Assets fetch error:", err);
     }
@@ -117,7 +124,7 @@ export default function Assignments() {
       }
 
       resetForm();
-      loadAssignments();
+      loadAssignments(page);
     } catch (err) {
       console.error("Submit error:", err);
       alert("Error: " + err.message);
@@ -147,7 +154,7 @@ export default function Assignments() {
 
     try {
       await deleteAssignment(id);
-      loadAssignments();
+      loadAssignments(page);
     } catch (err) {
       console.error("Delete error:", err);
       alert("Error deleting assignment");
@@ -226,6 +233,23 @@ export default function Assignments() {
           </table>
         )}
       </div>
+
+      {/* Pagination */}
+      {total > PAGE_SIZE && (
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, alignItems: "center" }}>
+          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #e5e7eb", cursor: page === 1 ? "default" : "pointer" }}>
+            ‹ Prev
+          </button>
+          <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>
+            Page {page} of {Math.ceil(total / PAGE_SIZE)} &nbsp;·&nbsp; {total} total
+          </span>
+          <button disabled={page >= Math.ceil(total / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #e5e7eb", cursor: page >= Math.ceil(total / PAGE_SIZE) ? "default" : "pointer" }}>
+            Next ›
+          </button>
+        </div>
+      )}
 
       {/* MODAL */}
       {showForm && (

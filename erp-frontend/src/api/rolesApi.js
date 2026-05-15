@@ -1,40 +1,7 @@
-const BASE_URL = "http://localhost:5000/api/roles";
+import { apiRequest } from "../services/api.js";
 
-export const getRoles = async () => {
-  const res = await fetch(BASE_URL);
-  return res.json();
-};
-
-export const getRoleById = async (id) => {
-  const res = await fetch(`${BASE_URL}/${id}`);
-  return res.json();
-};
-
-export const createRole = async (data) => {
-  const res = await fetch(BASE_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-};
-
-export const updateRole = async (id, data) => {
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-};
-
-export const deleteRole = async (id) => {
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE"
-  });
-  return res.json();
-};
+export const getRoles = ()           => apiRequest("/roles");
+export const getRoleById = (id)      => apiRequest(`/roles/${id}`);
+export const createRole = (data)     => apiRequest("/roles", "POST", data);
+export const updateRole = (id, data) => apiRequest(`/roles/${id}`, "PUT", data);
+export const deleteRole = (id)       => apiRequest(`/roles/${id}`, "DELETE");

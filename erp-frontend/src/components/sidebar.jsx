@@ -6,7 +6,7 @@ import {
   FiPackage, FiTag, FiClipboard, FiTool,
   FiCheckSquare, FiClock, FiBarChart2,
   FiLogOut, FiChevronRight,
-  FiGrid, FiUser
+  FiGrid, FiUser, FiAlertCircle, FiPieChart
 } from "react-icons/fi";
 
 const ICON_MAP = {
@@ -24,6 +24,8 @@ const ICON_MAP = {
   Categories:   <FiTag />,
   Assignments:  <FiClipboard />,
   Maintenance:  <FiTool />,
+  Tickets:      <FiAlertCircle />,
+  Analytics:    <FiPieChart />,
 };
 
 const MENU_BY_ROLE = {
@@ -32,25 +34,30 @@ const MENU_BY_ROLE = {
     { name: "Users",       path: "/admin/users",       section: "Management" },
     { name: "Roles",       path: "/admin/roles",       section: "Management" },
     { name: "Departments", path: "/admin/departments", section: "Management" },
-    { name: "Reports",     path: "/admin/reports",     section: "Analytics" },
+    { name: "Tickets",     path: "/tickets",            section: "Operations" },
+    { name: "Analytics",   path: "/analytics",          section: "Analytics" },
   ],
   manager: [
     { name: "Dashboard",   path: "/dashboard",         section: "Overview" },
     { name: "Team",        path: "/manager/team",      section: "Management" },
     { name: "Tasks",       path: "/manager/tasks",     section: "Management" },
-    { name: "Reports",     path: "/manager/reports",   section: "Analytics" },
+    { name: "Tickets",     path: "/tickets",           section: "Operations" },
+    { name: "Analytics",   path: "/analytics",         section: "Analytics" },
   ],
   employee: [
     { name: "Dashboard",   path: "/dashboard",         section: "Overview" },
     { name: "My Tasks",    path: "/tasks",             section: "Work" },
     { name: "Timesheet",   path: "/timesheet",         section: "Work" },
+    { name: "Tickets",     path: "/tickets",           section: "Work" },
+    { name: "Analytics",   path: "/analytics",         section: "Work" },
   ],
-  assests: [
+  assets: [
     { name: "Dashboard",   path: "/assets",            section: "Overview" },
     { name: "Assets",      path: "/assets/assets",     section: "Inventory" },
     { name: "Categories",  path: "/assets/categories", section: "Inventory" },
     { name: "Assignments", path: "/assets/assignments",section: "Operations" },
     { name: "Maintenance", path: "/assets/maintenance",section: "Operations" },
+    { name: "Analytics",   path: "/analytics",         section: "Analytics" },
   ],
 };
 

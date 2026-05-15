@@ -79,12 +79,13 @@ export default function Auth() {
   const { login, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
   const navigate = useNavigate();
 
-  /* ── Submit — UNCHANGED LOGIC ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setAuthError("");
     const form = new FormData(e.target);
 
     try {
@@ -94,10 +95,10 @@ export default function Auth() {
           password: form.get("password"),
         });
 
-        if (res.user.role === "admin")   navigate("/admin");
+        if (res.user.role === "admin")        navigate("/admin");
         else if (res.user.role === "manager") navigate("/manager");
-        else if (res.user.role === "assests") navigate("/assets");
-        else navigate("/dashboard");
+        else if (res.user.role === "assets")  navigate("/assets");
+        else                                  navigate("/dashboard");
 
       } else {
         await register({
@@ -109,6 +110,8 @@ export default function Auth() {
         alert("Registered! Now login.");
         setIsLogin(true);
       }
+    } catch (err) {
+      setAuthError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -264,6 +267,10 @@ export default function Auth() {
 
             <FloatingInput name="email"    label="Email address" type="email"    Icon={FiMail} />
             <FloatingInput name="password" label="Password"      type="password" Icon={FiLock} />
+
+            {authError && (
+              <p className="auth-error">{authError}</p>
+            )}
 
             <motion.button
               type="submit"

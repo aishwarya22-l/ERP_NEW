@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import { logEvent } from "../services/auditService.js";
 
 export const getCategories = async (req, res) => {
   try {
@@ -18,10 +19,13 @@ export const createCategory = async (req, res) => {
       return res.status(400).json({ message: "Category name is required" });
     }
 
-    await db.query(
+    const [result] = await db.query(
       "INSERT INTO categories (name, description, color, status) VALUES (?, ?, ?, ?)",
       [name, description, color, status]
     );
+
+    logEvent(req.session.user, "category", result.insertId, "create", null,
+      { name, description, color, status });
 
     res.json({ message: "Category created" });
   } catch (err) {
@@ -39,6 +43,10 @@ export const updateCategory = async (req, res) => {
       return res.status(400).json({ message: "Category name is required" });
     }
 
+    const [[before]] = await db.query(
+      "SELECT id, name, description, color, status FROM categories WHERE id = ?", [id]
+    );
+
     const [result] = await db.query(
       "UPDATE categories SET name = ?, description = ?, color = ?, status = ? WHERE id = ?",
       [name, description, color, status, id]
@@ -47,6 +55,8 @@ export const updateCategory = async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    logEvent(req.session.user, "category", id, "update", before, { name, description, color, status });
 
     res.json({ message: "Category updated" });
   } catch (err) {
@@ -59,11 +69,17 @@ export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const [[before]] = await db.query(
+      "SELECT id, name, description, color, status FROM categories WHERE id = ?", [id]
+    );
+
     const [result] = await db.query("DELETE FROM categories WHERE id = ?", [id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    logEvent(req.session.user, "category", id, "delete", before, null);
 
     res.json({ message: "Category deleted" });
   } catch (err) {

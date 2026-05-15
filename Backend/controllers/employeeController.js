@@ -1,5 +1,6 @@
 import db from "../config/db.js";
 import bcrypt from "bcryptjs";
+import { logEvent } from "../services/auditService.js";
 
 // GET ALL WITH PAGINATION
 export const getEmployees = async (req, res) => {
@@ -8,10 +9,7 @@ export const getEmployees = async (req, res) => {
     const pageSize = parseInt(req.query.pageSize) || 10;
     const offset = (page - 1) * pageSize;
 
-    // Get total count
     const [[{ total }]] = await db.query("SELECT COUNT(*) as total FROM employees");
-
-    // Get paginated data
     const [rows] = await db.query(
       "SELECT id, name, email, role, department, created_at FROM employees LIMIT ? OFFSET ?",
       [pageSize, offset]
@@ -35,13 +33,20 @@ export const createEmployee = async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
 
-    // Hash password
+    // Duplicate email check
+    const [[existing]] = await db.query("SELECT id FROM employees WHERE email = ?", [email]);
+    if (existing) {
+      return res.status(409).json({ message: "Email already in use" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await db.query(
+    const [result] = await db.query(
       "INSERT INTO employees (name, email, password, role, department) VALUES (?, ?, ?, ?, ?)",
       [name, email, hashedPassword, role, department || null]
     );
+
+    logEvent(req.session.user, "employee", result.insertId, "create", null, { name, email, role, department });
 
     res.json({ message: "Employee added" });
   } catch (err) {
@@ -56,7 +61,10 @@ export const updateEmployee = async (req, res) => {
     const { id } = req.params;
     const { name, email, password, role, department } = req.body;
 
-    // If password is provided and not empty, hash it
+    const [[before]] = await db.query(
+      "SELECT id, name, email, role, department FROM employees WHERE id = ?", [id]
+    );
+
     if (password && password.trim()) {
       const hashedPassword = await bcrypt.hash(password, 10);
       await db.query(
@@ -64,12 +72,13 @@ export const updateEmployee = async (req, res) => {
         [name, email, hashedPassword, role, department || null, id]
       );
     } else {
-      // Don't update password if not provided
       await db.query(
         "UPDATE employees SET name=?, email=?, role=?, department=? WHERE id=?",
         [name, email, role, department || null, id]
       );
     }
+
+    logEvent(req.session.user, "employee", id, "update", before, { name, email, role, department });
 
     res.json({ message: "Employee updated" });
   } catch (err) {
@@ -83,7 +92,13 @@ export const deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const [[before]] = await db.query(
+      "SELECT id, name, email, role, department FROM employees WHERE id = ?", [id]
+    );
+
     await db.query("DELETE FROM employees WHERE id=?", [id]);
+
+    logEvent(req.session.user, "employee", id, "delete", before, null);
 
     res.json({ message: "Employee deleted" });
   } catch (err) {

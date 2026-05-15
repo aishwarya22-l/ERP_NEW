@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import { logEvent } from "../services/auditService.js";
 
 // GET ALL
 export const getRoles = async (req, res) => {
@@ -16,11 +17,9 @@ export const getRoleById = async (req, res) => {
   try {
     const { id } = req.params;
     const [rows] = await db.query("SELECT * FROM roles WHERE id = ?", [id]);
-    
     if (rows.length === 0) {
       return res.status(404).json({ message: "Role not found" });
     }
-    
     res.json(rows[0]);
   } catch (err) {
     console.error(err);
@@ -39,16 +38,18 @@ export const createRole = async (req, res) => {
 
     const permissionsJSON = permissions ? JSON.stringify(permissions) : null;
 
-    await db.query(
+    const [result] = await db.query(
       "INSERT INTO roles (name, description, permissions) VALUES (?, ?, ?)",
       [name, description || null, permissionsJSON]
     );
+
+    logEvent(req.session.user, "role", result.insertId, "create", null, { name, description, permissions });
 
     res.json({ message: "Role created successfully" });
   } catch (err) {
     console.error(err);
     if (err.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({ message: "Role name already exists" });
+      return res.status(409).json({ message: "Role name already exists" });
     }
     res.status(500).json({ message: "Error creating role" });
   }
@@ -60,6 +61,8 @@ export const updateRole = async (req, res) => {
     const { id } = req.params;
     const { name, description, permissions } = req.body;
 
+    const [[before]] = await db.query("SELECT id, name, description, permissions FROM roles WHERE id = ?", [id]);
+
     const permissionsJSON = permissions ? JSON.stringify(permissions) : null;
 
     await db.query(
@@ -67,11 +70,13 @@ export const updateRole = async (req, res) => {
       [name, description || null, permissionsJSON, id]
     );
 
+    logEvent(req.session.user, "role", id, "update", before, { name, description, permissions });
+
     res.json({ message: "Role updated successfully" });
   } catch (err) {
     console.error(err);
     if (err.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({ message: "Role name already exists" });
+      return res.status(409).json({ message: "Role name already exists" });
     }
     res.status(500).json({ message: "Error updating role" });
   }
@@ -82,7 +87,11 @@ export const deleteRole = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const [[before]] = await db.query("SELECT id, name, description FROM roles WHERE id = ?", [id]);
+
     await db.query("DELETE FROM roles WHERE id=?", [id]);
+
+    logEvent(req.session.user, "role", id, "delete", before, null);
 
     res.json({ message: "Role deleted successfully" });
   } catch (err) {

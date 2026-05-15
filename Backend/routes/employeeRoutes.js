@@ -5,12 +5,13 @@ import {
   updateEmployee,
   deleteEmployee
 } from "../controllers/employeeController.js";
+import { isAuth, allowRoles } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/", getEmployees);
-router.post("/", createEmployee);
-router.put("/:id", updateEmployee);
-router.delete("/:id", deleteEmployee);
+router.get("/",      isAuth, allowRoles("admin", "manager", "employee"), getEmployees);
+router.post("/",     isAuth, allowRoles("admin"),                        createEmployee);
+router.put("/:id",   isAuth, allowRoles("admin"),                        updateEmployee);
+router.delete("/:id",isAuth, allowRoles("admin"),                        deleteEmployee);
 
 export default router;

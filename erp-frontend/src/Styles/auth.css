@@ -458,6 +458,18 @@
   background: rgba(124, 58, 237, 0.06);
 }
 
+/* ── Login error message ─────────────────────────────────── */
+.auth-error {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.84rem;
+  text-align: center;
+}
+
 /* ── Submit button ───────────────────────────────────────── */
 .auth-submit-btn {
   width: 100%;
