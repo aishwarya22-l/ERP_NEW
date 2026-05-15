@@ -95,10 +95,13 @@ export default function Auth() {
           password: form.get("password"),
         });
 
-        if (res.user.role === "admin")        navigate("/admin");
-        else if (res.user.role === "manager") navigate("/manager");
-        else if (res.user.role === "assets")  navigate("/assets");
-        else                                  navigate("/dashboard");
+        const role = res.user.role?.toString().toLowerCase();
+
+        if (role === "admin")        navigate("/admin");
+        else if (role === "manager") navigate("/manager");
+        else if (role === "assets")  navigate("/assets");
+        else if (role === "employee") navigate("/employee/dashboard");
+        else                            navigate("/dashboard");
 
       } else {
         await register({

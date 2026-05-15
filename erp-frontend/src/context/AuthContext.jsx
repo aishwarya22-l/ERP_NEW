@@ -1,9 +1,18 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/auth/me", { credentials: "include" })
+      .then(r => (r.ok ? r.json() : null))
+      .then(u => setUser(u || null))
+      .catch(() => {})
+      .finally(() => setAuthLoading(false));
+  }, []);
 
   const login = async (data) => {
     const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -37,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout, authLoading }}>
       {children}
     </AuthContext.Provider>
   );

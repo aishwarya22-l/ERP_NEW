@@ -27,6 +27,7 @@ export const loginUser = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase();
     let user = null;
+    let userSource = "users";
 
     // Check users table
     const [userRows] = await db.query(
@@ -45,6 +46,7 @@ export const loginUser = async (req, res) => {
 
       if (empRows.length > 0) {
         user = empRows[0];
+        userSource = "employees";
       }
     }
 
@@ -57,12 +59,17 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    const normalizedRole = (user.role || "")
+      .toString()
+      .trim()
+      .toLowerCase() || "employee";
+
     // ✅ Only store role (no userType)
     req.session.user = {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role,
+      role: normalizedRole,
     };
 
     res.json({

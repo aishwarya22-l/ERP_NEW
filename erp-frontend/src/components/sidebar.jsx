@@ -6,7 +6,7 @@ import {
   FiPackage, FiTag, FiClipboard, FiTool,
   FiCheckSquare, FiClock, FiBarChart2,
   FiLogOut, FiChevronRight,
-  FiGrid, FiUser, FiAlertCircle, FiPieChart
+  FiGrid, FiUser, FiAlertCircle, FiPieChart, FiSend
 } from "react-icons/fi";
 
 const ICON_MAP = {
@@ -25,7 +25,9 @@ const ICON_MAP = {
   Assignments:  <FiClipboard />,
   Maintenance:  <FiTool />,
   Tickets:      <FiAlertCircle />,
+  "My Tickets": <FiAlertCircle />,
   Analytics:    <FiPieChart />,
+  "Raise Ticket": <FiSend />,
 };
 
 const MENU_BY_ROLE = {
@@ -45,11 +47,10 @@ const MENU_BY_ROLE = {
     { name: "Analytics",   path: "/analytics",         section: "Analytics" },
   ],
   employee: [
-    { name: "Dashboard",   path: "/dashboard",         section: "Overview" },
-    { name: "My Tasks",    path: "/tasks",             section: "Work" },
-    { name: "Timesheet",   path: "/timesheet",         section: "Work" },
-    { name: "Tickets",     path: "/tickets",           section: "Work" },
-    { name: "Analytics",   path: "/analytics",         section: "Work" },
+    { name: "Dashboard",   path: "/employee/dashboard",    section: "Overview" },
+    { name: "Assets",      path: "/employee/assets",       section: "Work" },
+    { name: "Raise Ticket",path: "/employee/raise-ticket", section: "Work" },
+    { name: "My Tickets",  path: "/employee/tickets",      section: "Work" },
   ],
   assets: [
     { name: "Dashboard",   path: "/assets",            section: "Overview" },
@@ -72,7 +73,7 @@ export default function Sidebar({ onNavigate }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const role = user?.role;
+  const role = user?.role?.toString().toLowerCase();
 
   const handleLogout = async () => {
     await logout();

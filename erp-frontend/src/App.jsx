@@ -22,6 +22,10 @@ const Maintenance  = lazy(() => import("./pages/assets/Maintenance"));
 const Tickets      = lazy(() => import("./pages/tickets/Tickets"));
 const TicketDetail = lazy(() => import("./pages/tickets/TicketDetail"));
 const Analytics    = lazy(() => import("./pages/analytics/Analytics"));
+const EmployeeDashboard = lazy(() => import("./pages/employee/EmployeeDashboard"));
+const EmployeeAssets    = lazy(() => import("./pages/employee/EmployeeAssets"));
+const RaiseTicket       = lazy(() => import("./pages/employee/RaiseTicket"));
+const MyTickets         = lazy(() => import("./pages/employee/MyTickets"));
 
 function PageLoader() {
   return (
@@ -52,7 +56,8 @@ function Wrap({ roles, children }) {
   );
 }
 
-const ALL  = ["employee", "assets", "manager", "admin"];
+const NON_EMP = ["assets", "manager", "admin"];
+const EMP = ["employee"];
 const MGR  = ["manager", "admin"];
 const ADM  = ["admin"];
 
@@ -66,7 +71,7 @@ export default function App() {
           <Route path="/" element={<Auth />} />
 
           {/* Dashboard */}
-          <Route path="/dashboard" element={<Wrap roles={ALL}><Dashboard /></Wrap>} />
+          <Route path="/dashboard" element={<Wrap roles={NON_EMP}><Dashboard /></Wrap>} />
 
           {/* Admin area */}
           <Route path="/admin"               element={<Wrap roles={ADM}><Admin /></Wrap>} />
@@ -78,18 +83,24 @@ export default function App() {
           <Route path="/manager" element={<Wrap roles={MGR}><Manager /></Wrap>} />
 
           {/* Assets */}
-          <Route path="/assets"              element={<Wrap roles={ALL}><Assets /></Wrap>} />
-          <Route path="/assets/assets"       element={<Wrap roles={ALL}><Assets /></Wrap>} />
-          <Route path="/assets/categories"   element={<Wrap roles={ALL}><Categories /></Wrap>} />
-          <Route path="/assets/assignments"  element={<Wrap roles={ALL}><Assignments /></Wrap>} />
-          <Route path="/assets/maintenance"  element={<Wrap roles={ALL}><Maintenance /></Wrap>} />
+          <Route path="/assets"              element={<Wrap roles={NON_EMP}><Assets /></Wrap>} />
+          <Route path="/assets/assets"       element={<Wrap roles={NON_EMP}><Assets /></Wrap>} />
+          <Route path="/assets/categories"   element={<Wrap roles={NON_EMP}><Categories /></Wrap>} />
+          <Route path="/assets/assignments"  element={<Wrap roles={NON_EMP}><Assignments /></Wrap>} />
+          <Route path="/assets/maintenance"  element={<Wrap roles={NON_EMP}><Maintenance /></Wrap>} />
+
+          {/* Employee module */}
+          <Route path="/employee/dashboard"    element={<Wrap roles={EMP}><EmployeeDashboard /></Wrap>} />
+          <Route path="/employee/assets"       element={<Wrap roles={EMP}><EmployeeAssets /></Wrap>} />
+          <Route path="/employee/raise-ticket" element={<Wrap roles={EMP}><RaiseTicket /></Wrap>} />
+          <Route path="/employee/tickets"      element={<Wrap roles={EMP}><MyTickets /></Wrap>} />
 
           {/* Tickets */}
-          <Route path="/tickets"    element={<Wrap roles={ALL}><Tickets /></Wrap>} />
-          <Route path="/tickets/:id" element={<Wrap roles={ALL}><TicketDetail /></Wrap>} />
+          <Route path="/tickets"    element={<Wrap roles={NON_EMP}><Tickets /></Wrap>} />
+          <Route path="/tickets/:id" element={<Wrap roles={NON_EMP}><TicketDetail /></Wrap>} />
 
           {/* Analytics */}
-          <Route path="/analytics"  element={<Wrap roles={ALL}><Analytics /></Wrap>} />
+          <Route path="/analytics"  element={<Wrap roles={NON_EMP}><Analytics /></Wrap>} />
 
         </Routes>
       </BrowserRouter>
