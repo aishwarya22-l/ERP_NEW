@@ -171,9 +171,10 @@ export const initDatabase = async () => {
         CREATE TABLE IF NOT EXISTS maintenance_logs (
           id INT AUTO_INCREMENT PRIMARY KEY,
           asset_id INT,
+          raised_by INT,
           issue TEXT,
           priority ENUM('low','medium','high','urgent') DEFAULT 'medium',
-          status ENUM('open','in_progress','resolved') DEFAULT 'open',
+          status ENUM('open','in_progress','resolved','closed','reopened') DEFAULT 'open',
           maintenance_type VARCHAR(100),
           technician VARCHAR(100),
           maintenance_date DATE,
@@ -181,12 +182,33 @@ export const initDatabase = async () => {
           cost DECIMAL(10,2),
           notes TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
+          FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE,
+          FOREIGN KEY (raised_by) REFERENCES employees(id) ON DELETE SET NULL
         )
       `);
       console.log("Maintenance table ✅");
     } catch (err) {
       console.error("Maintenance error ❌", err);
+    }
+
+    // Add raised_by to existing maintenance_logs (safe to re-run — errors 1060/1061/1826 are ignored)
+    try {
+      await conn.query(`ALTER TABLE maintenance_logs ADD COLUMN raised_by INT DEFAULT NULL`);
+      console.log("Maintenance raised_by column ✅");
+    } catch (err) {
+      if (![1060, 1061, 1826].includes(err.errno)) console.warn("raised_by ALTER warn:", err.message);
+    }
+    try {
+      await conn.query(`ALTER TABLE maintenance_logs ADD CONSTRAINT fk_ml_raised_by FOREIGN KEY (raised_by) REFERENCES employees(id) ON DELETE SET NULL`);
+    } catch (err) {
+      if (![1060, 1061, 1826].includes(err.errno)) console.warn("raised_by FK warn:", err.message);
+    }
+    // Extend status ENUM to include closed and reopened
+    try {
+      await conn.query(`ALTER TABLE maintenance_logs MODIFY COLUMN status ENUM('open','in_progress','resolved','closed','reopened') DEFAULT 'open'`);
+      console.log("Maintenance status ENUM extended ✅");
+    } catch (err) {
+      console.warn("status ENUM alter warn:", err.message);
     }
 
     // ================= TICKETS =================

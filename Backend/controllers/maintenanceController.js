@@ -1,5 +1,6 @@
 import db from "../config/db.js";
 import { logEvent } from "../services/auditService.js";
+import { sendEmail } from "../services/notificationService.js";
 
 export const getMaintenanceLogs = async (req, res) => {
   try {
@@ -76,21 +77,24 @@ export const createMaintenanceLog = async (req, res) => {
       return res.status(400).json({ message: "Issue description must be at least 5 characters" });
     }
 
-    if (!isNaN(asset_id) === false) {
+    if (isNaN(asset_id)) {
       return res.status(400).json({ message: "Invalid asset ID" });
     }
 
-    const [[asset]] = await db.query("SELECT id, status FROM assets WHERE id = ?", [asset_id]);
+    const [[asset]] = await db.query("SELECT id, name, status FROM assets WHERE id = ?", [asset_id]);
 
     if (!asset) {
       return res.status(404).json({ message: "Asset not found" });
     }
 
+    // Employees always raise tickets as 'open'; raised_by is set from session
+    const raised_by = req.session.user?.id ?? null;
+
     const [result] = await db.query(
       `INSERT INTO maintenance_logs
-       (asset_id, issue, status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [asset_id, issue.trim(), status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes]
+       (asset_id, raised_by, issue, status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [asset_id, raised_by, issue.trim(), status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes]
     );
 
     if (asset.status !== "maintenance") {
@@ -98,12 +102,22 @@ export const createMaintenanceLog = async (req, res) => {
     }
 
     logEvent(req.session.user, "maintenance", result.insertId, "create", null,
-      { asset_id, issue, status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes });
+      { asset_id, raised_by, issue, status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes });
+
+    // Notify asset team by email when a ticket is raised
+    const assetTeamEmail = process.env.ASSET_TEAM_EMAIL;
+    if (assetTeamEmail) {
+      await sendEmail(
+        assetTeamEmail,
+        `New Maintenance Ticket #${result.insertId} — ${priority.toUpperCase()} priority`,
+        `A new ticket has been raised.\n\nTicket ID: ${result.insertId}\nAsset: ${asset.name}\nIssue: ${issue.trim()}\nPriority: ${priority}\nRaised by employee ID: ${raised_by}`
+      );
+    }
 
     res.status(201).json({
       message: "Maintenance log created successfully",
       id: result.insertId,
-      asset_id, issue, status, priority, maintenance_type, technician,
+      asset_id, raised_by, issue, status, priority, maintenance_type, technician,
       maintenance_date, completion_date, cost, notes
     });
   } catch (err) {
@@ -146,11 +160,11 @@ export const updateMaintenanceLog = async (req, res) => {
       values.push(issue.trim());
     }
 
-    if (status !== undefined && ["open", "in_progress", "resolved"].includes(status)) {
+    if (status !== undefined && ["open", "in_progress", "resolved", "closed", "reopened"].includes(status)) {
       updates.push("status = ?");
       values.push(status);
 
-      if (status === "resolved") {
+      if (status === "resolved" || status === "closed") {
         await db.query("UPDATE assets SET status = 'available' WHERE id = ?", [log.asset_id]);
       }
     }
@@ -215,7 +229,7 @@ export const getMaintenanceLogsByStatus = async (req, res) => {
   try {
     const { status } = req.params;
 
-    const validStatuses = ["open", "in_progress", "resolved"];
+    const validStatuses = ["open", "in_progress", "resolved", "closed", "reopened"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status filter" });
     }
@@ -266,5 +280,73 @@ export const getMaintenanceLogsByAsset = async (req, res) => {
   } catch (err) {
     console.error("Error fetching maintenance logs by asset:", err);
     res.status(500).json({ message: "Error fetching maintenance logs" });
+  }
+};
+
+export const getMyTickets = async (req, res) => {
+  try {
+    const employeeId = req.session.user?.id;
+    if (!employeeId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    const [rows] = await db.query(
+      `SELECT m.id, m.asset_id, m.raised_by, m.issue, m.status, m.priority,
+              m.maintenance_type, m.technician, m.maintenance_date,
+              m.completion_date, m.notes, m.created_at,
+              a.name AS asset_name, a.asset_tag
+       FROM maintenance_logs m
+       LEFT JOIN assets a ON m.asset_id = a.id
+       WHERE m.raised_by = ?
+       ORDER BY m.created_at DESC`,
+      [employeeId]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching employee tickets:", err);
+    res.status(500).json({ message: "Error fetching your tickets" });
+  }
+};
+
+export const reopenTicket = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const employeeId = req.session.user?.id;
+
+    if (!employeeId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({ message: "Invalid ticket ID" });
+    }
+
+    const [[log]] = await db.query(
+      "SELECT id, raised_by, status FROM maintenance_logs WHERE id = ?",
+      [id]
+    );
+
+    if (!log) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    if (Number(log.raised_by) !== Number(employeeId)) {
+      return res.status(403).json({ message: "You can only reopen tickets you raised" });
+    }
+
+    if (log.status !== "closed") {
+      return res.status(400).json({ message: "Only closed tickets can be reopened" });
+    }
+
+    await db.query("UPDATE maintenance_logs SET status = 'reopened' WHERE id = ?", [id]);
+
+    logEvent(req.session.user, "maintenance", id, "reopen",
+      { status: "closed" }, { status: "reopened" });
+
+    res.json({ message: "Ticket reopened successfully" });
+  } catch (err) {
+    console.error("Error reopening ticket:", err);
+    res.status(500).json({ message: "Error reopening ticket" });
   }
 };

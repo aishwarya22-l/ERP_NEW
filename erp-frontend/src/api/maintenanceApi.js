@@ -7,3 +7,5 @@ export const updateMaintenanceLog = (id, data)         => apiRequest(`/maintenan
 export const deleteMaintenanceLog = (id)               => apiRequest(`/maintenance/${id}`, "DELETE");
 export const getMaintenanceLogsByStatus = (status)     => apiRequest(`/maintenance/status/${status}`);
 export const getMaintenanceLogsByAsset = (assetId)     => apiRequest(`/maintenance/asset/${assetId}`);
+export const getMyTickets = ()                         => apiRequest("/maintenance/my-tickets");
+export const reopenTicket = (id)                       => apiRequest(`/maintenance/${id}/reopen`, "PATCH");
