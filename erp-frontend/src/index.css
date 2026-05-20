@@ -75,7 +75,7 @@
   --gradient-page:    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(139,92,246,0.06) 0%, transparent 70%);
 
   /* ── Layout ── */
-  --sidebar-width: 260px;
+  --sidebar-width: 288px;
   --header-height: 70px;
   --radius-2xl: 24px;
   --radius-xl:  20px;
