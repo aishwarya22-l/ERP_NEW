@@ -275,6 +275,52 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+.custody-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 104px;
+  justify-content: space-between;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.custody-badge strong {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+}
+
+.custody-badge--healthy {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.22);
+  color: #047857;
+}
+
+.custody-badge--watch {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.26);
+  color: #92400e;
+}
+
+.custody-badge--high {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.24);
+  color: #b91c1c;
+}
+
+.custody-badge--neutral {
+  justify-content: center;
+  background: rgba(107, 114, 128, 0.1);
+  border-color: rgba(107, 114, 128, 0.16);
+  color: #6b7280;
+}
+
 /* ─── Glow badge ──────────────────────────────────────── */
 .badge-glow-purple {
   box-shadow: 0 0 10px rgba(124, 58, 237, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);

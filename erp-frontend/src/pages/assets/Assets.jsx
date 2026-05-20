@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAssets, createAsset, updateAsset, deleteAsset as deleteAssetApi, getCategories } from "../../api/assetApi.js";
+import { getCustodyIntelligence } from "../../api/analyticsApi.js";
+import { getCustodyLevelLabel, indexCustodyByAsset } from "../../utils/custody.js";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import "../../styles/assets.css";
 
@@ -10,6 +12,7 @@ export default function Assets() {
   const [total, setTotal]       = useState(0);
   const [page, setPage]         = useState(1);
   const [categories, setCategories] = useState([]);
+  const [custodyByAsset, setCustodyByAsset] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
 
@@ -40,6 +43,12 @@ export default function Assets() {
   };
 
   useEffect(() => { fetchData(page); }, [page]);
+
+  useEffect(() => {
+    getCustodyIntelligence()
+      .then((data) => setCustodyByAsset(indexCustodyByAsset(data.items || [])))
+      .catch((err) => console.error("Failed to load custody intelligence:", err));
+  }, []);
 
   // ================= ADD / UPDATE =================
   const handleSubmit = async () => {
@@ -216,6 +225,7 @@ export default function Assets() {
               <th>Name</th>
               <th>Tag</th>
               <th>Status</th>
+              <th>Custody Risk</th>
               <th>Category</th>
               <th>Actions</th>
             </tr>
@@ -231,6 +241,20 @@ export default function Assets() {
                   <span className={`asset-status asset-status--${a.status || "other"}`}>
                     {a.status}
                   </span>
+                </td>
+
+                <td>
+                  {custodyByAsset[String(a.id)] ? (
+                    <span
+                      className={`custody-badge custody-badge--${custodyByAsset[String(a.id)].custody_level}`}
+                      title={custodyByAsset[String(a.id)].primary_reason}
+                    >
+                      {getCustodyLevelLabel(custodyByAsset[String(a.id)].custody_level)}
+                      <strong>{custodyByAsset[String(a.id)].custody_confidence}%</strong>
+                    </span>
+                  ) : (
+                    <span className="custody-badge custody-badge--neutral">Not assigned</span>
+                  )}
                 </td>
 
                 <td>{a.category_name}</td>

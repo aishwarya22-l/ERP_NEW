@@ -7,12 +7,14 @@ import {
 import {
   FiPackage, FiAlertCircle, FiUsers, FiTrendingUp,
   FiBarChart2, FiActivity, FiPieChart, FiCheckCircle,
+  FiShield,
 } from "react-icons/fi";
 import {
   getAssetStatusDistribution,
   getTicketMetrics,
   getEmployeesByDepartment,
   getDepartmentPerformance,
+  getCustodyIntelligence,
 } from "../../api/analyticsApi.js";
 import "../../styles/analytics.css";
 
@@ -91,6 +93,7 @@ export default function Analytics() {
   const [ticketData, setTicketData] = useState({ byStatus: [], byPriority: [], monthly: [] });
   const [empByDept, setEmpByDept]   = useState([]);
   const [deptPerf, setDeptPerf]     = useState([]);
+  const [custodyData, setCustodyData] = useState({ summary: {}, topRiskAssets: [], byDepartment: [] });
   const [loading, setLoading]       = useState(true);
 
   useEffect(() => {
@@ -99,11 +102,13 @@ export default function Analytics() {
       getTicketMetrics(),
       getEmployeesByDepartment(),
       getDepartmentPerformance(),
-    ]).then(([a, t, e, d]) => {
+      getCustodyIntelligence(),
+    ]).then(([a, t, e, d, c]) => {
       setAssetDist(a);
       setTicketData(t);
       setEmpByDept(e);
       setDeptPerf(d);
+      setCustodyData(c);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -122,6 +127,7 @@ export default function Analytics() {
   const totalTickets   = ticketData.byStatus.reduce((a, b) => a + (b.count || 0), 0);
   const resolvedCount  = ticketData.byStatus.find(s => s.name === "resolved")?.count || 0;
   const resolvedRate   = totalTickets ? Math.round((resolvedCount / totalTickets) * 100) : 0;
+  const custodySummary = custodyData.summary || {};
 
   /* Priority colors for bar chart */
   const PRIORITY_COLORS = { urgent: "#ef4444", high: "#f97316", medium: "#f59e0b", low: "#10b981" };
@@ -178,8 +184,81 @@ export default function Analytics() {
         />
       </section>
 
+      <section className="custody-intel-panel">
+        <div className="custody-intel-copy">
+          <div className="custody-intel-icon"><FiShield /></div>
+          <div>
+            <h2>Asset Custody Intelligence</h2>
+            <p>Scores assigned assets using department mismatches, stale assignments, maintenance activity, and linked ticket signals.</p>
+          </div>
+        </div>
+        <div className="custody-intel-metrics">
+          <div>
+            <span>Avg Confidence</span>
+            <strong>{custodySummary.averageConfidence ?? 100}%</strong>
+          </div>
+          <div>
+            <span>High Risk</span>
+            <strong>{custodySummary.high ?? 0}</strong>
+          </div>
+          <div>
+            <span>Watch</span>
+            <strong>{custodySummary.watch ?? 0}</strong>
+          </div>
+        </div>
+      </section>
+
       {/* ── Charts grid ── */}
       <div className="analytics-grid">
+
+        {/* Asset custody intelligence — full width */}
+        {custodyData.byDepartment?.length > 0 && (
+          <div className="chart-card chart-card--full" style={{ "--chart-accent": "linear-gradient(90deg, #0f766e, #06b6d4)", animationDelay: "0.08s" }}>
+            <div className="chart-card-header">
+              <div>
+                <h3 className="chart-title">Custody Risk by Department</h3>
+                <p className="chart-sub">High-risk and watch-list assets from assignment, ticket, and maintenance signals</p>
+              </div>
+              <div className="chart-badge" style={{ background: "rgba(15,118,110,0.08)", color: "#0f766e", borderColor: "rgba(15,118,110,0.18)" }}>
+                <FiShield size={11} /> Intelligence
+              </div>
+            </div>
+            <div className="custody-chart-layout">
+              <div className="chart-container chart-container--tall">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={custodyData.byDepartment}
+                    margin={{ top: 8, right: 20, left: -12, bottom: 4 }}
+                    barSize={20}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.07)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11.5, fill: "#9ca3af", fontWeight: 500 }} axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(15,118,110,0.04)" }} />
+                    <Legend formatter={(value) => <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>{value}</span>} />
+                    <Bar dataKey="high" name="High Risk" fill="#ef4444" radius={[4, 4, 1, 1]} />
+                    <Bar dataKey="watch" name="Watch" fill="#f59e0b" radius={[4, 4, 1, 1]} />
+                    <Bar dataKey="healthy" name="Healthy" fill="#10b981" radius={[4, 4, 1, 1]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="custody-risk-list">
+                <h4>Review Queue</h4>
+                {custodyData.topRiskAssets?.length ? custodyData.topRiskAssets.map((asset) => (
+                  <div key={asset.asset_id} className={`custody-risk-item custody-risk-item--${asset.custody_level}`}>
+                    <div>
+                      <strong>{asset.asset_name}</strong>
+                      <span>{asset.assigned_department || "Unassigned"} • {asset.primary_reason}</span>
+                    </div>
+                    <b>{asset.custody_confidence}%</b>
+                  </div>
+                )) : (
+                  <div className="custody-risk-empty">No custody review needed</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Asset status distribution — Pie */}
         <div className="chart-card" style={{ "--chart-accent": "linear-gradient(90deg, #7c3aed, #a855f7)", animationDelay: "0.1s" }}>

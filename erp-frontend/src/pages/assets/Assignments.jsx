@@ -9,8 +9,10 @@ import {
   updateAssignment,
   deleteAssignment
 } from "../../api/assignmentApi";
+import { getCustodyIntelligence } from "../../api/analyticsApi";
 import { getDepartments } from "../../api/departmentApi";
 import { getAvailableAssets } from "../../api/assetApi";
+import { getCustodyLevelLabel, indexCustodyByAsset } from "../../utils/custody";
 
 const PAGE_SIZE = 20;
 
@@ -25,6 +27,7 @@ export default function Assignments() {
   const [assets, setAssets] = useState([]);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [custodyByAsset, setCustodyByAsset] = useState({});
 
   const [formData, setFormData] = useState({
     asset_id: "",
@@ -39,6 +42,7 @@ export default function Assignments() {
     loadAssignments(page);
     loadDepartments();
     loadAssets();
+    loadCustodyIntelligence();
   }, []);
 
   useEffect(() => { loadAssignments(page); }, [page]);
@@ -74,6 +78,15 @@ export default function Assignments() {
       setAssets(Array.isArray(data) ? data : data.data ?? []);
     } catch (err) {
       console.error("Assets fetch error:", err);
+    }
+  };
+
+  const loadCustodyIntelligence = async () => {
+    try {
+      const data = await getCustodyIntelligence();
+      setCustodyByAsset(indexCustodyByAsset(data.items || []));
+    } catch (err) {
+      console.error("Custody intelligence fetch error:", err);
     }
   };
 
@@ -197,6 +210,7 @@ export default function Assignments() {
                 <th>Department</th>
                 <th>Assigned Date</th>
                 <th>Return Date</th>
+                <th>Custody</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -210,6 +224,19 @@ export default function Assignments() {
                   <td>{assignment.department || "N/A"}</td>
                   <td>{assignment.assigned_date || "N/A"}</td>
                   <td>{assignment.return_date || "-"}</td>
+                  <td>
+                    {custodyByAsset[String(assignment.asset_id)] ? (
+                      <span
+                        className={`custody-badge custody-badge--${custodyByAsset[String(assignment.asset_id)].custody_level}`}
+                        title={custodyByAsset[String(assignment.asset_id)].primary_reason}
+                      >
+                        {getCustodyLevelLabel(custodyByAsset[String(assignment.asset_id)].custody_level)}
+                        <strong>{custodyByAsset[String(assignment.asset_id)].custody_confidence}%</strong>
+                      </span>
+                    ) : (
+                      <span className="custody-badge custody-badge--neutral">Pending</span>
+                    )}
+                  </td>
                   <td>
                     <span
                       className={`status-badge status-${assignment.status}`}
