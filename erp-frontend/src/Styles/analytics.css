@@ -1,0 +1,350 @@
+/* ══════════════════════════════════════════════════════════
+   ANALYTICS — Premium Cinematic Design
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Page shell ─────────────────────────────────────────── */
+.analytics-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 48px;
+}
+
+/* ── Page header ─────────────────────────────────────────── */
+.analytics-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 2px 0 4px;
+}
+
+.analytics-title {
+  font-size: clamp(20px, 2.6vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.analytics-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 4px 0 0;
+  font-weight: 400;
+}
+
+/* ── Loading state ──────────────────────────────────────── */
+.analytics-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+  color: #6b7280;
+}
+
+.analytics-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(124, 58, 237, 0.15);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── KPI Strip ──────────────────────────────────────────── */
+.analytics-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.analytics-kpi-card {
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 14px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.5s ease both;
+}
+
+.analytics-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--kpi-color, linear-gradient(90deg, #7c3aed, #a855f7));
+  border-radius: 14px 14px 0 0;
+}
+
+.analytics-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(109, 40, 217, 0.12), 0 4px 8px rgba(0,0,0,0.05);
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+.kpi-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 17px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.18);
+  background: var(--kpi-color, linear-gradient(135deg, #7c3aed, #a855f7));
+  flex-shrink: 0;
+}
+
+.kpi-value {
+  font-size: clamp(24px, 2.5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  color: #111827;
+  line-height: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.kpi-sub--success { background: rgba(5,150,105,0.1); color: #065f46; }
+.kpi-sub--warning { background: rgba(217,119,6,0.1); color: #92400e; }
+.kpi-sub--info    { background: rgba(2,132,199,0.1); color: #1e40af; }
+.kpi-sub--purple  { background: rgba(124,58,237,0.1); color: #6d28d9; }
+
+/* ── Charts grid ─────────────────────────────────────────── */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+/* ── Chart card ─────────────────────────────────────────── */
+.chart-card {
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.5s ease both;
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-card::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--chart-accent, linear-gradient(90deg, #7c3aed, #6366f1));
+  border-radius: 16px 16px 0 0;
+}
+
+.chart-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(109, 40, 217, 0.09), 0 2px 6px rgba(0,0,0,0.04);
+  border-color: rgba(124, 58, 237, 0.16);
+}
+
+.chart-card--full {
+  grid-column: 1 / -1;
+}
+
+/* ── Chart card header ───────────────────────────────────── */
+.chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.chart-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.2px;
+  margin: 0;
+}
+
+.chart-sub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 3px;
+}
+
+.chart-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(124, 58, 237, 0.08);
+  color: #6d28d9;
+  border: 1px solid rgba(124, 58, 237, 0.16);
+}
+
+/* ── Chart container (bounded height) ───────────────────── */
+.chart-container {
+  width: 100%;
+  height: 240px;
+  position: relative;
+}
+
+.chart-container--tall {
+  height: 280px;
+}
+
+.chart-container--short {
+  height: 200px;
+}
+
+/* ── Custom tooltip ──────────────────────────────────────── */
+.custom-tooltip {
+  background: rgba(15, 10, 40, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  pointer-events: none;
+}
+
+.custom-tooltip-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(196, 181, 253, 0.8);
+  margin-bottom: 6px;
+}
+
+.custom-tooltip-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f0eaff;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.5px;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 10px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.chart-empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(124, 58, 237, 0.06);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(124, 58, 237, 0.4);
+  font-size: 20px;
+}
+
+/* ── Legend ──────────────────────────────────────────────── */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(99, 102, 241, 0.06);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .analytics-kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card--full {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .analytics-kpi-strip {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .kpi-value { font-size: 22px; }
+}
+
+/* ── Fade-in animation ───────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

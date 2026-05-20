@@ -134,33 +134,41 @@ useEffect(() => {
   return (
     <div className="users-page">
 
+      {/* PAGE HEADER */}
+      <div className="users-page-header">
+        <div>
+          <h1 className="users-page-title">Users</h1>
+          <p className="users-page-sub">Manage team members and access permissions</p>
+        </div>
+      </div>
+
       {/* FLOAT BUTTON */}
       <button className="floating-add" onClick={() => setShowForm(true)}>
         <FaPlus />
       </button>
 
       {/* TABLE */}
-      <div className="table-container glass">
-<div className="pagination-header">
-  <div className="pagination-controls">
-    <select
-      value={pageSize}
-      onChange={(e) => {
-        setPageSize(Number(e.target.value));
-        setCurrentPage(1);
-      }}
-    >
-      <option value={10}>10</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
-    </select>
-    <span style={{ marginLeft: "10px" }}>Total: {total}</span>
-  </div>
-</div>
+      <div className="table-container">
+        <div className="pagination-header">
+          <div className="pagination-controls">
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={10}>10</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span>{total} total members</span>
+          </div>
+        </div>
         {loading ? (
-          <p style={{ textAlign: "center" }}>Loading...</p>
+          <p style={{ textAlign: "center", padding: "40px", color: "#9ca3af" }}>Loading...</p>
         ) : users.length === 0 ? (
-          <p style={{ textAlign: "center", opacity: 0.6 }}>
+          <p style={{ textAlign: "center", padding: "40px", color: "#9ca3af" }}>
             No users found 🚀
           </p>
         ) : (

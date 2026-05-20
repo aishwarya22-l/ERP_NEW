@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAssets, createAsset, updateAsset, deleteAsset as deleteAssetApi, getCategories } from "../../api/assetApi.js";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import "../../styles/assets.css";
 
 const PAGE_SIZE = 20;
@@ -227,14 +228,7 @@ export default function Assets() {
                 <td>{a.asset_tag}</td>
 
                 <td>
-                  <span
-                    style={{
-                      color: "white",
-                      padding: "5px 10px",
-                      borderRadius: "5px",
-                      background: getStatusColor(a.status)
-                    }}
-                  >
+                  <span className={`asset-status asset-status--${a.status || "other"}`}>
                     {a.status}
                   </span>
                 </td>
@@ -242,13 +236,17 @@ export default function Assets() {
                 <td>{a.category_name}</td>
 
                 <td>
-                  <button onClick={() => editAsset(a)}>Edit</button>
-                  <button
+                  <FaEdit
+                    className="icon edit"
+                    onClick={() => editAsset(a)}
+                    title="Edit asset"
+                  />
+                  <FaTrash
+                    className="icon delete"
                     onClick={() => handleDeleteAsset(a.id)}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    Delete
-                  </button>
+                    title="Delete asset"
+                    style={{ marginLeft: 4 }}
+                  />
                 </td>
               </tr>
             ))}
@@ -258,16 +256,14 @@ export default function Assets() {
 
       {/* Pagination */}
       {total > PAGE_SIZE && (
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, alignItems: "center" }}>
-          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-            style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #e5e7eb", background: page === 1 ? "#f9fafb" : "#fff", cursor: page === 1 ? "default" : "pointer" }}>
+        <div className="pagination" style={{ marginTop: 0 }}>
+          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>
             ‹ Prev
           </button>
-          <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>
-            Page {page} of {Math.ceil(total / PAGE_SIZE)} &nbsp;·&nbsp; {total} total
+          <span style={{ fontSize: "12px", color: "#9ca3af", padding: "0 8px", fontWeight: 500 }}>
+            Page {page} of {Math.ceil(total / PAGE_SIZE)} · {total} total
           </span>
-          <button disabled={page >= Math.ceil(total / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}
-            style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #e5e7eb", background: page >= Math.ceil(total / PAGE_SIZE) ? "#f9fafb" : "#fff", cursor: page >= Math.ceil(total / PAGE_SIZE) ? "default" : "pointer" }}>
+          <button disabled={page >= Math.ceil(total / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}>
             Next ›
           </button>
         </div>

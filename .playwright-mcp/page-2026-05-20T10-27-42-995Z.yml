@@ -1,0 +1,70 @@
+- generic [ref=e3]:
+  - generic [ref=e8]:
+    - generic [ref=e9]: Enterprise Resource Platform
+    - heading "Manage your business smarter & faster." [level=1] [ref=e11]:
+      - text: Manage your business
+      - text: smarter & faster.
+    - paragraph [ref=e12]: One unified platform for assets, teams, payroll, and operations — built for modern enterprises.
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: 500+
+        - generic [ref=e16]: Companies
+      - generic [ref=e18]:
+        - generic [ref=e19]: 98%
+        - generic [ref=e20]: Uptime
+      - generic [ref=e22]:
+        - generic [ref=e23]: 24/7
+        - generic [ref=e24]: Support
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - img [ref=e28]
+        - generic [ref=e32]:
+          - heading "Asset & IT Inventory" [level=4] [ref=e33]
+          - paragraph [ref=e34]: Track devices, assign assets, monitor lifecycle with real-time visibility.
+      - generic [ref=e35]:
+        - img [ref=e37]
+        - generic [ref=e39]:
+          - heading "Payroll Management" [level=4] [ref=e40]
+          - paragraph [ref=e41]: Automate salary processing, deductions, payslips, and compliance.
+      - generic [ref=e42]:
+        - img [ref=e44]
+        - generic [ref=e46]:
+          - heading "Role-Based Access" [level=4] [ref=e47]
+          - paragraph [ref=e48]: Secure permissions for admin, manager, and employee roles.
+  - generic [ref=e50]:
+    - generic [ref=e51]:
+      - generic [ref=e52]: E
+      - generic [ref=e53]: ERP Suite
+    - generic [ref=e54]:
+      - heading "Welcome back" [level=2] [ref=e55]
+      - paragraph [ref=e56]: Sign in to access your workspace
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - generic:
+          - img
+        - textbox [ref=e59]:
+          - /placeholder: " "
+        - generic: Email address
+      - generic [ref=e60]:
+        - generic:
+          - img
+        - textbox [ref=e61]:
+          - /placeholder: " "
+        - generic: Password
+        - button "Show password" [ref=e62] [cursor=pointer]:
+          - img [ref=e63]
+      - button "Sign In" [ref=e66] [cursor=pointer]:
+        - generic [ref=e67]: Sign In
+        - img [ref=e68]
+    - generic [ref=e71]: or
+    - paragraph [ref=e72] [cursor=pointer]: Don't have an account? Register free
+    - generic [ref=e73]:
+      - generic [ref=e74]:
+        - img [ref=e75]
+        - text: SOC 2 Compliant
+      - generic [ref=e78]:
+        - img [ref=e79]
+        - text: 256-bit Encrypted
+      - generic [ref=e82]:
+        - img [ref=e83]
+        - text: GDPR Ready

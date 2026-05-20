@@ -140,14 +140,17 @@ export default function AppLayout({ children }) {
           display: flex;
           align-items: center;
           gap: 14px;
-          padding: 0 18px;
-          background: #FFFFFF;
-          border-bottom: 1px solid #E5E7EB;
+          padding: 0 22px;
+          background: rgba(255, 255, 255, 0.88);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(99, 102, 241, 0.1);
           position: sticky;
           top: 0;
           z-index: 50;
           flex-shrink: 0;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+          box-shadow: 0 1px 0 rgba(99, 102, 241, 0.06),
+                      0 2px 12px rgba(0,0,0,0.05);
         }
 
         .hamburger-btn {
@@ -182,6 +185,8 @@ export default function AppLayout({ children }) {
           overflow-y: auto;
           overflow-x: hidden;
           padding: 28px 32px;
+          background: var(--bg-primary);
+          background-image: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(139,92,246,0.05) 0%, transparent 65%);
         }
 
         /* ── Responsive breakpoints ── */
