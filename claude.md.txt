@@ -1,0 +1,166 @@
+# ERP Asset Management System
+
+## Project Overview
+This is a production-style ERP Asset Management System built using:
+- React.js frontend
+- Node.js + Express backend
+- MySQL database
+
+The goal is to evolve this into an enterprise-grade ERP platform with scalable architecture, analytics, ticket management, audit tracking, notifications, and role-based access control.
+
+---
+
+# Folder Structure
+
+## Frontend
+Location: /Frontend
+
+Main responsibilities:
+- Dashboard UI
+- Authentication
+- Asset Management
+- Employee Management
+- Ticket System
+- Charts & Analytics
+
+## Backend
+Location: /Backend
+
+Architecture:
+- routes/
+- controllers/
+- services/
+- middleware/
+- config/
+- utils/
+
+Follow MVC + service-layer architecture.
+
+---
+
+# Coding Rules
+
+- Do NOT rewrite the entire project
+- Extend existing architecture incrementally
+- Reuse existing components and APIs
+- Keep endpoints stateless
+- Use async/await consistently
+- Keep business logic in services
+- Avoid duplicate code
+- Follow existing naming conventions
+- Do not modify .env or deployment configs
+- Use clean and maintainable code
+
+---
+
+# ERP Challenges To Solve
+
+This ERP should solve real-world operational problems:
+
+1. Slow dashboard performance
+2. Weak ticket management
+3. No audit tracking
+4. Poor asset lifecycle tracking
+5. Missing notifications
+6. Lack of analytics
+7. Weak role-based security
+8. Duplicate/inconsistent data
+9. Poor mobile responsiveness
+10. Scalability problems
+
+---
+
+# Required Features
+
+## Ticket System
+- Employees can raise tickets
+- Priority levels
+- SLA tracking
+- Ticket comments
+- Ticket history
+- Admin assignment workflow
+
+## Audit Logging
+Track:
+- create
+- update
+- delete
+events with:
+- user
+- timestamp
+- before/after changes
+
+## Notifications
+- In-app notifications
+- Ticket updates
+- Asset assignment alerts
+
+## Analytics Dashboard
+Charts for:
+- ticket metrics
+- asset usage
+- employee productivity
+- department performance
+
+---
+
+# Development Workflow
+
+Before coding:
+1. Analyze existing structure
+2. Explain implementation plan
+3. Wait for approval
+4. Implement phase by phase
+
+After each phase:
+- summarize changed files
+- explain architecture decisions
+- pause for review
+
+---
+
+# Constraints
+
+Always ask before:
+- adding dependencies
+- deleting files
+- major refactors
+- database schema redesign
+
+Use migration files for database changes.
+
+---
+
+# UI Guidelines
+
+- Modern enterprise SaaS style
+- Purple theme
+- Responsive design
+- Reusable dashboard components
+- Minimal-click workflows
+
+---
+
+# Performance Rules
+
+- Use pagination
+- Optimize MySQL queries
+- Avoid N+1 queries
+- Add indexes where needed
+- Use lazy loading for React routes
+
+---
+
+# Security Rules
+
+- JWT authentication
+- Role-based authorization
+- Protected APIs
+- Bcrypt password hashing
+- Middleware-based access control
+
+---
+
+# Goal
+
+Build software that resembles enterprise ERP systems used in real companies rather than a student CRUD project.

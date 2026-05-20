@@ -1,35 +1,13 @@
-const BASE_URL = "http://localhost:5000/api/users";
+import { apiRequest } from "../services/api.js";
 
-// GET
-export const getUsers = async () => {
-  const res = await fetch(BASE_URL);
-  return res.json();
-};
+export const getUsers = (page = 1, pageSize = 10) =>
+  apiRequest(`/employees?page=${page}&pageSize=${pageSize}`);
 
-// CREATE
-export const createUser = async (data) => {
-  const res = await fetch(BASE_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-};
+export const getEmployees = (page = 1, pageSize = 10) =>
+  apiRequest(`/employees?page=${page}&pageSize=${pageSize}`);
 
-// UPDATE
-export const updateUser = async (id, data) => {
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-};
+export const createUser = (data) => apiRequest("/employees", "POST", data);
 
-// DELETE
-export const deleteUser = async (id) => {
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE"
-  });
-  return res.json();
-};
+export const updateUser = (id, data) => apiRequest(`/employees/${id}`, "PUT", data);
+
+export const deleteUser = (id) => apiRequest(`/employees/${id}`, "DELETE");

@@ -7,11 +7,26 @@ export const isAuth = (req, res, next) => {
 
 export const allowRoles = (...roles) => {
   return (req, res, next) => {
-    const userRole = req.session.user.role;
+    const userRole = req.session.user.role?.toString().toLowerCase();
+    const normalizedRoles = roles.map((role) => role.toString().toLowerCase());
 
-    if (!roles.includes(userRole)) {
+    if (!normalizedRoles.includes(userRole)) {
       return res.status(403).json({
-        message: `Access denied: ${userRole}`
+        message: `Access denied: ${req.session.user.role}`
+      });
+    }
+
+    next();
+  };
+};
+
+export const allowUserTypes = (...userTypes) => {
+  return (req, res, next) => {
+    const userType = req.session.user.userType;
+
+    if (!userTypes.includes(userType)) {
+      return res.status(403).json({
+        message: `Access denied for user type: ${userType}`
       });
     }
 
