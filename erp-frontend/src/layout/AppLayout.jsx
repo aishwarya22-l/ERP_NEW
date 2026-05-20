@@ -75,7 +75,7 @@ export default function AppLayout({ children }) {
           display: flex;
           min-height: 100vh;
           position: relative;
-          overflow: hidden;
+          overflow-x: hidden;
           background: #F8FAFC;
         }
 
@@ -84,8 +84,9 @@ export default function AppLayout({ children }) {
           flex-shrink: 0;
           width: var(--sidebar-width);
           height: 100vh;
-          position: sticky;
+          position: fixed;
           top: 0;
+          left: 0;
           z-index: 100;
           transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
                       opacity  0.32s ease;
@@ -129,9 +130,12 @@ export default function AppLayout({ children }) {
         .main-wrapper {
           flex: 1;
           min-width: 0;
+          width: calc(100% - var(--sidebar-width));
+          min-height: 100vh;
+          margin-left: var(--sidebar-width);
           display: flex;
           flex-direction: column;
-          overflow: hidden;
+          overflow: visible;
         }
 
         /* ── Top bar (mobile + desktop) ── */
@@ -182,15 +186,20 @@ export default function AppLayout({ children }) {
         /* ── Page content ── */
         .page-content {
           flex: 1;
-          overflow-y: auto;
+          min-height: calc(100vh - 54px);
           overflow-x: hidden;
-          padding: 28px 32px;
+          padding: 24px;
           background: var(--bg-primary);
           background-image: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(139,92,246,0.05) 0%, transparent 65%);
         }
 
         /* ── Responsive breakpoints ── */
         @media (max-width: 900px) {
+          .main-wrapper {
+            width: 100%;
+            margin-left: 0;
+          }
+
           .page-content {
             padding: 20px 16px;
           }
