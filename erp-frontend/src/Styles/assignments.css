@@ -1,317 +1,422 @@
-:root {
-  --bg: radial-gradient(circle at top, #b5a0d0, #f7f5f9);
-  --glass: rgba(255, 255, 255, 0.08);
-  --border: rgba(255, 255, 255, 0.18);
-  --accent: #a855f7;
-  --accent2: #7c3aed;
-  --text: #e9d5ff;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Poppins", sans-serif;
-}
+/* ═══════════════════════════════════════════════════════
+   ASSIGNMENTS — Light Enterprise Theme
+   All selectors scoped to .assignments-page to prevent
+   global CSS pollution.
+   ═══════════════════════════════════════════════════════ */
 
 .assignments-page {
   width: 100%;
-}
-
-/* TABLE */
-.table-container {
   padding: 20px;
-  border-radius: 20px;
-  background: var(--glass);
-  backdrop-filter: blur(25px);
-  border: 1px solid var(--border);
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
+  box-sizing: border-box;
 }
 
-table {
+/* ── Header ───────────────────────────────────────────── */
+.assignments-page .assignments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.assignments-page .assignments-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+
+/* ── Table Container ──────────────────────────────────── */
+.assignments-page .table-container {
+  padding: 20px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.06);
+  overflow-x: auto;
+}
+
+/* ── Table ────────────────────────────────────────────── */
+.assignments-page table {
   width: 100%;
   border-collapse: collapse;
-  color: #e9d5ff;
+  font-size: 14px;
 }
 
-th {
-  background: rgba(168, 85, 247, 0.15);
+.assignments-page thead tr {
+  border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+.assignments-page th {
+  background: rgba(248, 250, 255, 0.9);
   font-weight: 600;
-  padding: 12px;
+  padding: 11px 14px;
   text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #7c3aed;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
 }
 
-td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.assignments-page td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+  color: #374151;
+  vertical-align: middle;
 }
 
-tr:hover {
-  background: rgba(168, 85, 247, 0.08);
-  transition: 0.3s;
+.assignments-page tbody tr {
+  transition: background 0.15s ease;
 }
 
-/* ICONS */
-.icon {
-  margin-right: 12px;
+.assignments-page tbody tr:hover {
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.assignments-page tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Action Icons ─────────────────────────────────────── */
+.assignments-page .icon {
+  margin-right: 10px;
   cursor: pointer;
-  transition: 0.3s;
+  font-size: 15px;
+  color: #9ca3af;
+  transition: color 0.18s ease, transform 0.18s ease, filter 0.18s ease;
 }
 
-.edit:hover {
+.assignments-page .edit:hover {
   color: #22c55e;
   transform: scale(1.2);
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.5));
 }
 
-.delete:hover {
+.assignments-page .delete:hover {
   color: #ef4444;
   transform: scale(1.2);
+  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5));
 }
 
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 0, 30, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 0.3s ease;
-  z-index: 1000;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* GLASS FORM */
-.glass-card {
-  backdrop-filter: blur(30px);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--border);
-  padding: 30px;
+/* ── Status Badges ────────────────────────────────────── */
+.assignments-page .status-badge {
+  display: inline-block;
+  padding: 3px 10px;
   border-radius: 20px;
-  width: 380px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
-  animation: scaleIn 0.3s ease;
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.glass-card h2 {
-  margin-bottom: 20px;
-  text-align: center;
-  color: #e9d5ff;
-  font-size: 1.5rem;
-}
-
-/* INPUT */
-.glass-card input,
-.glass-card select {
-  margin: 12px 0;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e9d5ff;
-  outline: none;
-  transition: 0.3s;
-}
-
-.glass-card input:focus,
-.glass-card select:focus {
-  border-color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
-}
-
-.glass-card input::placeholder {
-  color: rgba(233, 213, 255, 0.5);
-}
-
-/* DROPDOWN STYLING */
-.glass-card select {
-  cursor: pointer;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(124, 58, 237, 0.15));
-}
-
-.glass-card select option {
-  background: #0f001f;
-  color: #e9d5ff;
-}
-
-/* BUTTONS */
-.glass-card button {
-  margin-top: 10px;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
+  font-size: 11px;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
-.glass-card button:hover {
-  background: linear-gradient(135deg, #9333ea, #6d28d9);
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+.assignments-page .status-assigned {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: rgba(21, 128, 61, 0.18);
 }
 
-.cancel {
-  background: #666 !important;
+.assignments-page .status-returned {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: rgba(29, 78, 216, 0.18);
 }
 
-.cancel:hover {
-  background: #555 !important;
-}
-
-.floating-add {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
-  border: none;
-  padding: 18px;
-  border-radius: 50%;
-  color: white;
-  font-size: 20px;
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
-  cursor: pointer;
-  transition: 0.3s;
-  z-index: 999;
-}
-
-.floating-add:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.9);
-}
-
-.pagination {
+/* ── Pagination ───────────────────────────────────────── */
+.assignments-page .pagination {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 15px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(99, 102, 241, 0.08);
+  padding-top: 16px;
+  flex-wrap: wrap;
 }
 
-.pagination button {
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  padding: 6px 12px;
+.assignments-page .pagination button {
+  padding: 7px 14px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: #ffffff;
+  color: #374151;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.18s ease;
+}
+
+.assignments-page .pagination button:hover:not(:disabled) {
+  border-color: #7c3aed;
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.06);
+}
+
+.assignments-page .pagination button.active {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
   color: white;
-  transition: 0.3s;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.38);
 }
 
-.pagination button.active {
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-}
-
-.pagination button:disabled {
+.assignments-page .pagination button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.pagination button:hover:not(:disabled) {
-  background: rgba(168, 85, 247, 0.2);
-}
-
-.pagination-header {
+/* ── Pagination Header ────────────────────────────────── */
+.assignments-page .pagination-header {
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.pagination-controls {
+.assignments-page .pagination-controls {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.pagination-controls select {
-  padding: 6px 10px;
+.assignments-page .pagination-controls select {
+  padding: 7px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e9d5ff;
+  border: 1.5px solid rgba(99, 102, 241, 0.14);
+  background: #F8FAFF;
+  color: #374151;
   cursor: pointer;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
-.pagination-controls select option {
-  background: #0f001f;
-  color: #e9d5ff;
+.assignments-page .pagination-controls select:focus {
+  border-color: #7c3aed;
 }
 
-.users-list {
-  max-height: 250px;
+.assignments-page .pagination-controls span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ── Modal ────────────────────────────────────────────── */
+.assignments-page .modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 2, 20, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: asgn-fadeIn 0.2s ease;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@keyframes asgn-fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Glass Form Card ──────────────────────────────────── */
+.assignments-page .glass-card {
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  padding: 32px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 88vh;
   overflow-y: auto;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  background: rgba(168, 85, 247, 0.08);
-  margin: 12px 0;
-  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(99, 102, 241, 0.08);
+  animation: asgn-scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.users-list label {
+@keyframes asgn-scaleIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.assignments-page .glass-card h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+/* ── Form Inputs ──────────────────────────────────────── */
+.assignments-page .glass-card input,
+.assignments-page .glass-card select {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(99, 102, 241, 0.14);
+  background: #F8FAFF;
+  color: #111827;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.assignments-page .glass-card input::placeholder {
+  color: #9ca3af;
+}
+
+.assignments-page .glass-card input:focus,
+.assignments-page .glass-card select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  background: #fff;
+}
+
+/* ── Users List ───────────────────────────────────────── */
+.assignments-page .users-list {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1.5px solid rgba(99, 102, 241, 0.14);
+  border-radius: 10px;
+  background: #F8FAFF;
+  margin: 8px 0;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+}
+
+.assignments-page .users-list label {
   display: flex;
   align-items: center;
-  padding: 10px 15px;
+  padding: 9px 14px;
   cursor: pointer;
-  transition: 0.3s;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.15s ease;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.06);
 }
 
-.users-list label:hover {
-  background: rgba(168, 85, 247, 0.15);
+.assignments-page .users-list label:last-child {
+  border-bottom: none;
 }
 
-.users-list input[type="radio"] {
+.assignments-page .users-list label:hover {
+  background: rgba(124, 58, 237, 0.06);
+}
+
+.assignments-page .users-list input[type="radio"] {
   margin-right: 10px;
   cursor: pointer;
-  accent-color: #a855f7;
+  accent-color: #7c3aed;
 }
 
-.users-list span {
-  color: #e9d5ff;
+.assignments-page .users-list span {
+  color: #374151;
+  font-size: 13px;
 }
 
-.no-users {
-  padding: 15px;
+.assignments-page .no-users {
+  padding: 14px;
   text-align: center;
-  color: rgba(233, 213, 255, 0.5);
-  font-size: 0.9rem;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
-.loading {
+.assignments-page .loading {
   text-align: center;
   padding: 20px;
-  color: rgba(233, 213, 255, 0.7);
+  color: #9ca3af;
+  font-size: 14px;
 }
 
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
+/* ── Form Buttons ─────────────────────────────────────── */
+.assignments-page .glass-card button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: white;
+  font-size: 14px;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.32);
 }
 
-.status-assigned {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
+.assignments-page .glass-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.48);
 }
 
-.status-returned {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+.assignments-page .glass-card .cancel {
+  background: #f9fafb !important;
+  border: 1.5px solid rgba(99, 102, 241, 0.14) !important;
+  color: #6b7280 !important;
+  box-shadow: none !important;
+}
+
+.assignments-page .glass-card .cancel:hover {
+  background: #f3f4f6 !important;
+  transform: none !important;
+}
+
+/* ── Floating Add ─────────────────────────────────────── */
+.assignments-page .floating-add {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 4px 22px rgba(124, 58, 237, 0.55);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  transition: all 0.2s ease;
+}
+
+.assignments-page .floating-add:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.75);
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .assignments-page { padding: 12px; }
+
+  .assignments-page .glass-card {
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
+
+  .assignments-page table { font-size: 12px; }
+
+  .assignments-page th,
+  .assignments-page td { padding: 9px 10px; }
+
+  .assignments-page .floating-add {
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
 }

@@ -2,13 +2,13 @@
    ROLES — Glass Morphism Design System
    ═══════════════════════════════════════════════════════ */
 
-:root {
+.roles-page {
   --r-glass:   rgba(255, 255, 255, 0.06);
   --r-border:  rgba(168, 85, 247, 0.25);
   --r-accent:  #a855f7;
   --r-accent2: #7c3aed;
   --r-text:    #0b0b0c;
-  --r-muted:   rgba(233, 213, 255, 0.55);
+  --r-muted:   #9ca3af;
   --r-danger:  #ef4444;
   --r-success: #22c55e;
   --r-ease:    0.22s ease;
@@ -60,18 +60,18 @@
 }
 
 /* ─── TABLE ───────────────────────────────────────────── */
-table {
+.roles-page table {
   width: 100%;
   min-width: 500px;
   border-collapse: collapse;
   font-size: 14px;
 }
 
-thead tr {
+.roles-page thead tr {
   border-bottom: 1px solid rgba(168, 85, 247, 0.28);
 }
 
-th {
+.roles-page th {
   background: rgba(168, 85, 247, 0.11);
   font-weight: 600;
   padding: 13px 16px;
@@ -83,30 +83,30 @@ th {
   white-space: nowrap;
 }
 
-td {
+.roles-page td {
   padding: 13px 16px;
   border-bottom: 1px solid rgba(168, 85, 247, 0.09);
   color: var(--r-text);
   vertical-align: middle;
 }
 
-tbody tr {
+.roles-page tbody tr {
   transition: background var(--r-ease);
 }
 
-tbody tr:hover {
+.roles-page tbody tr:hover {
   background: rgba(168, 85, 247, 0.09);
 }
 
-tbody tr:nth-child(even) {
+.roles-page tbody tr:nth-child(even) {
   background: rgba(168, 85, 247, 0.03);
 }
 
-tbody tr:nth-child(even):hover {
+.roles-page tbody tr:nth-child(even):hover {
   background: rgba(168, 85, 247, 0.09);
 }
 
-tbody tr:last-child td {
+.roles-page tbody tr:last-child td {
   border-bottom: none;
 }
 
@@ -372,24 +372,24 @@ td .permissions-text {
 @media (max-width: 768px) {
   .roles-page { padding: 4px; }
 
-  .table-container {
+  .roles-page .table-container {
     padding: 14px;
     border-radius: 16px;
   }
 
-  th, td {
+  .roles-page th, .roles-page td {
     padding: 10px 12px;
     font-size: 12px;
   }
 
-  .glass-card {
+  .roles-page .glass-card {
     padding: 24px 18px;
     border-radius: 20px;
   }
 
-  .glass-card h2 { font-size: 17px; }
+  .roles-page .glass-card h2 { font-size: 17px; }
 
-  .floating-add {
+  .roles-page .floating-add {
     bottom: 20px;
     right: 20px;
     width: 48px;
@@ -399,11 +399,11 @@ td .permissions-text {
 }
 
 @media (max-width: 480px) {
-  table { font-size: 12px; }
+  .roles-page table { font-size: 12px; }
 
-  th, td { padding: 8px 10px; }
+  .roles-page th, .roles-page td { padding: 8px 10px; }
 
-  .glass-card { padding: 20px 14px; }
+  .roles-page .glass-card { padding: 20px 14px; }
 
-  .permission-tag { font-size: 10px; padding: 2px 7px; }
+  .roles-page .permission-tag { font-size: 10px; padding: 2px 7px; }
 }

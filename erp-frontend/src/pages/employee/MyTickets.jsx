@@ -136,7 +136,7 @@ export default function MyTickets() {
       {!loading && tickets.length > 0 && (
         <div className="mt-card-list">
           {tickets.map(ticket => (
-            <div key={ticket.id} className="mt-ticket-card">
+            <div key={ticket.id} className={`mt-ticket-card mt-ticket-card--${ticket.priority || ticket.status}`}>
               <div className="mt-ticket-card__header">
                 <span className="mt-ticket-id">#{ticket.id}</span>
                 <StatusBadge status={ticket.status} />
