@@ -5,3 +5,4 @@ export const getAssetStatusDistribution = () => apiRequest("/analytics/asset-sta
 export const getTicketMetrics          = () => apiRequest("/analytics/ticket-metrics");
 export const getEmployeesByDepartment  = () => apiRequest("/analytics/employees-by-dept");
 export const getDepartmentPerformance  = () => apiRequest("/analytics/department-performance");
+export const getCustodyIntelligence    = () => apiRequest("/analytics/custody-intelligence");

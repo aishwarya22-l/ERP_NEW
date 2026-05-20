@@ -98,6 +98,82 @@
   border-color: rgba(124, 58, 237, 0.2);
 }
 
+.custody-intel-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 22px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 118, 110, 0.13);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.06);
+}
+
+.custody-intel-copy {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.custody-intel-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: linear-gradient(135deg, #0f766e, #06b6d4);
+  box-shadow: 0 8px 18px rgba(15, 118, 110, 0.22);
+  flex-shrink: 0;
+}
+
+.custody-intel-copy h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.custody-intel-copy p {
+  margin: 3px 0 0;
+  color: #6b7280;
+  font-size: 12.5px;
+}
+
+.custody-intel-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(92px, 1fr));
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.custody-intel-metrics div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 118, 110, 0.1);
+}
+
+.custody-intel-metrics span {
+  display: block;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.custody-intel-metrics strong {
+  display: block;
+  margin-top: 2px;
+  color: #0f766e;
+  font-size: 20px;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
 .kpi-icon {
   width: 38px;
   height: 38px;
@@ -186,6 +262,72 @@
 .chart-card--full {
   grid-column: 1 / -1;
   min-height: 420px;
+}
+
+.custody-chart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: stretch;
+  flex: 1;
+}
+
+.custody-risk-list {
+  border-left: 1px solid rgba(99, 102, 241, 0.08);
+  padding-left: 18px;
+  min-width: 0;
+}
+
+.custody-risk-list h4 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.custody-risk-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.07);
+}
+
+.custody-risk-item strong,
+.custody-risk-item span {
+  display: block;
+}
+
+.custody-risk-item strong {
+  color: #111827;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.custody-risk-item span {
+  margin-top: 2px;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.custody-risk-item b {
+  color: #0f766e;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.custody-risk-item--high b { color: #dc2626; }
+.custody-risk-item--watch b { color: #d97706; }
+
+.custody-risk-empty {
+  padding: 18px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #6b7280;
+  font-size: 12px;
+  text-align: center;
 }
 
 /* ── Chart card header ───────────────────────────────────── */
@@ -333,6 +475,26 @@
 }
 
 @media (max-width: 900px) {
+  .custody-intel-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .custody-intel-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .custody-chart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .custody-risk-list {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid rgba(99, 102, 241, 0.08);
+    padding-top: 16px;
+  }
+
   .analytics-grid {
     grid-template-columns: 1fr;
   }
@@ -350,6 +512,10 @@
 
   .chart-card {
     padding: 16px;
+  }
+
+  .custody-intel-metrics {
+    grid-template-columns: 1fr;
   }
 
   .kpi-value { font-size: 22px; }
