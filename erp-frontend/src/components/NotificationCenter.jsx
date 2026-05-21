@@ -2,17 +2,35 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getNotifications, markRead, markAllRead } from "../api/notificationApi";
+import { BASE_URL } from "../services/api";
 
 const TYPE_ICON = {
+  new_ticket:     "🎫",
   ticket_update:  "🎫",
   asset_assigned: "📦",
   sla_breach:     "⚠️",
 };
 
 const ENTITY_PATH = {
-  ticket:     (id) => `/tickets/${id}`,
-  assignment: ()   => `/assets/assignments`,
+  ticket:      (id) => `/tickets/${id}`,
+  assignment:  ()   => `/assets/assignments`,
+  maintenance: ()   => `/assets/maintenance`,
 };
+
+function playNotifSound() {
+  try {
+    const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } catch { /* AudioContext unavailable — skip silently */ }
+}
 
 export default function NotificationCenter() {
   const { user }   = useAuth();
@@ -38,7 +56,7 @@ export default function NotificationCenter() {
   // SSE connection
   useEffect(() => {
     if (!user) return;
-    const es = new EventSource("http://localhost:5000/api/sse", { withCredentials: true });
+    const es = new EventSource(`${BASE_URL}/sse`, { withCredentials: true });
     esRef.current = es;
 
     es.addEventListener("notification", (e) => {
@@ -46,6 +64,7 @@ export default function NotificationCenter() {
         const notif = JSON.parse(e.data);
         setNotifications(prev => [notif, ...prev].slice(0, 30));
         setUnread(n => n + 1);
+        if (notif.type === "new_ticket") playNotifSound();
       } catch {}
     });
 

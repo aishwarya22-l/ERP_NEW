@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getDepartments, createDepartment, updateDepartment, deleteDepartment } from "../../api/departmentApi";
+import { BASE_URL } from "../../services/api";
 import "../../styles/assets.css";
 
 export default function Departments() {
@@ -21,7 +22,7 @@ export default function Departments() {
     try {
       const [departmentsData, employeesData] = await Promise.all([
         getDepartments(),
-        fetch("http://localhost:5000/api/employees?page=1&pageSize=100").then(r => r.json())
+        fetch(`${BASE_URL}/employees?page=1&pageSize=100`, { credentials: "include" }).then(r => r.json())
       ]);
 
       setDepartments(departmentsData);

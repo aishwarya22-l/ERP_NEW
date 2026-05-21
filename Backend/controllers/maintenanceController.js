@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 import { logEvent } from "../services/auditService.js";
-import { sendEmail } from "../services/notificationService.js";
+import { sendEmail, send } from "../services/notificationService.js";
 
 export const getMaintenanceLogs = async (req, res) => {
   try {
@@ -103,6 +103,20 @@ export const createMaintenanceLog = async (req, res) => {
 
     logEvent(req.session.user, "maintenance", result.insertId, "create", null,
       { asset_id, raised_by, issue, status, priority, maintenance_type, technician, maintenance_date, completion_date, cost, notes });
+
+    // Notify all assets-role users in real time via SSE
+    const [assetUsers] = await db.query("SELECT id FROM employees WHERE role = 'assets'");
+    const employeeName = req.session.user?.name ?? `Employee #${raised_by}`;
+    for (const u of assetUsers) {
+      send(
+        u.id,
+        "new_ticket",
+        `New Ticket #${result.insertId} — ${priority.toUpperCase()}`,
+        `${employeeName} reported an issue with ${asset.name}: ${issue.trim()}`,
+        "maintenance",
+        result.insertId
+      );
+    }
 
     // Notify asset team by email when a ticket is raised
     const assetTeamEmail = process.env.ASSET_TEAM_EMAIL;
