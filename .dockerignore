@@ -1,0 +1,12 @@
+.git
+.github
+.claude
+.playwright-mcp
+.superpowers
+node_modules
+Backend/node_modules
+erp-frontend/node_modules
+erp-frontend/dist
+playwright-report
+test-results
+*.log

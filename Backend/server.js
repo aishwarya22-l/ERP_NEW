@@ -21,8 +21,13 @@ const app = express();
 
 // Initialize database on startup
 initDatabase().then(() => {
+  const corsOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,http://localhost:5174")
+    .split(",")
+    .map(origin => origin.trim())
+    .filter(Boolean);
+
   app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: corsOrigins,
     credentials: true
   }));
 
@@ -54,7 +59,8 @@ initDatabase().then(() => {
   app.use("/api/analytics",    analyticsRoutes);
   app.use("/api/search",       searchRoutes);
 
-  app.listen(5000, () => console.log("Server running on port 5000"));
+  const port = Number(process.env.PORT || 5000);
+  app.listen(port, "0.0.0.0", () => console.log(`Server running on port ${port}`));
 }).catch(err => {
   console.error("Failed to initialize database:", err);
   process.exit(1);

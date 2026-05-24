@@ -7,16 +7,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const initDatabase = async () => {
   const conn = await mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: ""
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "",
+    port: Number(process.env.DB_PORT || 3306)
   });
 
   try {
-    await conn.query(`CREATE DATABASE IF NOT EXISTS erp`);
+    const dbName = process.env.DB_NAME || "erp";
+    await conn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
     console.log("DB created");
 
-    await conn.query(`USE erp`);
+    await conn.query(`USE \`${dbName}\``);
     console.log("Using DB");
 
     // USERS
