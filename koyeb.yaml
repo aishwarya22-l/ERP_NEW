@@ -28,16 +28,16 @@ services:
       - key: NODE_ENV
         value: "production"
       - key: DB_HOST
-        value: "SET_IN_KOYEB_DASHBOARD"
+        value: "CLEVER_CLOUD_HOST_HERE"
       - key: DB_PORT
-        value: "SET_IN_KOYEB_DASHBOARD"
+        value: "3306"
       - key: DB_USER
-        value: "SET_IN_KOYEB_DASHBOARD"
+        value: "CLEVER_CLOUD_USER_HERE"
       - key: DB_PASSWORD
-        value: "SET_IN_KOYEB_DASHBOARD"
+        value: "CLEVER_CLOUD_PASS_HERE"
       - key: DB_NAME
         value: "erp"
       - key: SESSION_SECRET
-        value: "SET_IN_KOYEB_DASHBOARD"
+        value: "b7f069bb1c56745c2fe1f5d10fc11cc4cdcd0e12fad780890646a86668a9d1d2"
       - key: CORS_ORIGIN
-        value: "SET_IN_KOYEB_DASHBOARD"
+        value: "https://VERCEL_FRONTEND_URL_HERE"
