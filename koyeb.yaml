@@ -25,10 +25,12 @@ services:
     env:
       - key: PORT
         value: "5000"
+      - key: NODE_ENV
+        value: "production"
       - key: DB_HOST
-        value: "db4free.net"
+        value: "SET_IN_KOYEB_DASHBOARD"
       - key: DB_PORT
-        value: "3306"
+        value: "SET_IN_KOYEB_DASHBOARD"
       - key: DB_USER
         value: "SET_IN_KOYEB_DASHBOARD"
       - key: DB_PASSWORD
