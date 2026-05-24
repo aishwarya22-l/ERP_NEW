@@ -40,7 +40,11 @@ initDatabase().then(() => {
     secret: process.env.SESSION_SECRET || "erp-dev-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
-    cookie: { httpOnly: true, sameSite: "lax" }
+    cookie: {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure:   process.env.NODE_ENV === "production"
+    }
   }));
 
   // ROUTES
